@@ -1,0 +1,7 @@
+/home/WUR/tang043/work/China/Forcing/ssp585/MRI-ESM2-0/ 2036 2065 30 /home/WUR/tang043/work/China/mask/mask.nc
+Tmin_daily_2036-2065.nc  TMIN Tmin
+Tmax_daily_2036-2065.nc  TMAX  Tmax
+SWdown_daily_2036-2065.nc  RADIATION SWdown
+Rainf_daily_2036-2065.nc  RAIN Rainf
+Wind_daily_2036-2065.nc  WINDSPEED Wind
+Vap_daily_2036-2065.nc  VAPOUR Vap

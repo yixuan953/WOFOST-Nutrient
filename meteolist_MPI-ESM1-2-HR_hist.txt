@@ -1,0 +1,7 @@
+/home/WUR/tang043/work/China/Forcing/historical/MPI-ESM1-2-HR/ 1986 2015 30 /home/WUR/tang043/work/China/mask/mask.nc
+Tmin_daily_1986-2015.nc  TMIN Tmin
+Tmax_daily_1986-2015.nc  TMAX  Tmax
+SWdown_daily_1986-2015.nc  RADIATION SWdown
+Rainf_daily_1986-2015.nc  RAIN Rainf
+Wind_daily_1986-2015.nc  WINDSPEED Wind
+Vap_daily_1986-2015.nc  VAPOUR Vap
