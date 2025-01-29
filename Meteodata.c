@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <netcdf.h>
 #include <math.h>
+#include <netcdf.h>
 #include "wofost.h"
 #include "extern.h"
 

@@ -406,11 +406,13 @@ typedef struct SIMUNIT {
         Management *mng;
         Soil  *soil;
         int emergence;
-        int file;
+        int file_DO;
+        int file_AO;
         int flag;
         char start[MAX_STRING];
-        char output[MAX_STRING];
-        
+        char output_daily[MAX_STRING];
+        char output_annual[MAX_STRING];
+
         /* Statistics */
         float twso[100000];
         float length[100000];

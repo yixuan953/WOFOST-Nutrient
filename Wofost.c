@@ -10,8 +10,10 @@
 int main(int argc, char **argv)
 {
 
-    FILE **files; // 声明一个指向FILE指针的指针，这%通常用于指向一个FILE指针数组，可以用来处理多个文件
-    FILE *fptr;   // 声明一个指向FILE的指针，通常用于文件操作，如打开、读取、写入和关闭文件。
+    FILE **files_DO; // 声明一个指向FILE指针的指针，这%通常用于指向一个FILE指针数组，可以用来处理多个文件
+    FILE **files_AO; // 声明一个指向FILE指针的指针，这%通常用于指向一个FILE指针数组，可以用来处理多个文件
+    FILE *fptr_DO;   // 声明一个指向FILE的指针，通常用于文件操作，如打开、读取、写入和关闭文件。
+    FILE *fptr_AO;   // 声明一个指向FILE的指针，通常用于文件操作，如打开、读取、写入和关闭文件。
 
     SimUnit *initial = NULL; // 声明一个指向SimUnit类型的指针并初始化为NULL，SimUnit可能是一个用户定义的数据类型。
     Weather *head;           // 声明一个指向Weather类型的指针，可能用于链表的头指针，用来存储天气数据。
@@ -24,8 +26,10 @@ int main(int argc, char **argv)
 
     char list[MAX_STRING];      // 声明一个字符数组list，大小为MAX_STRING，可能用来存储一个字符串列表。
     char meteolist[MAX_STRING]; // 声明一个字符数组meteolist，大小为MAX_STRING，可能用来存储气象数据的列表。
-    char name[MAX_STRING];      // 声明一个字符数组name，大小为MAX_STRING
-    char name_old[MAX_STRING];  // 声明一个字符数组name_old，大小为MAX_STRING。
+    char name_DO[MAX_STRING];      // 声明一个字符数组name，大小为MAX_STRING
+    char name_old_DO[MAX_STRING];  // 声明一个字符数组name_old，大小为MAX_STRING。
+    char name_AO[MAX_STRING];      // 声明一个字符数组name，大小为MAX_STRING
+    char name_old_AO[MAX_STRING];  // 声明一个字符数组name_old，大小为MAX_STRING。
 
     Step = 1.; // 将Step变量赋值为1.0，Step的声明没有在这段代码中显示，可能在前面已经声明过。
 
@@ -55,40 +59,68 @@ int main(int argc, char **argv)
     GetMeteoInput(meteolist);
 
     /* Allocate memory for the file pointers */      /* 为文件指针分配内存 */
-    files = malloc(sizeof(**files) * NumberOfFiles); // 分配足够存储NumberOfFiles个FILE指针的内存
+    files_DO = malloc(sizeof(**files_DO) * NumberOfFiles); // 分配足够存储NumberOfFiles个FILE指针的内存
+    files_AO = malloc(sizeof(**files_AO) * NumberOfFiles); // 分配足够存储NumberOfFiles个FILE指针的内存
 
     /* Go back to the beginning of the list */ /* 返回列表的开始位置 */
     Grid = initial;
 
     /* Open the output files */                            /* 打开输出文件 */
-    memset(name_old, '\0', MAX_STRING);                    // 将name_old数组初始化为全'\0'
+    memset(name_old_DO, '\0', MAX_STRING);                 // 将name_old数组初始化为全'\0'
+    memset(name_old_AO, '\0', MAX_STRING);                 // 将name_old数组初始化为全'\0'
     while (Grid)                                           // 遍历Grid链表
     {                                                      /* Make valgrind happy  */
-        memset(name, '\0', MAX_STRING);                    // 将name数组初始化为全'\0'
-        strncpy(name, Grid->output, strlen(Grid->output)); // 复制输出文件名到name数组中
+        memset(name_DO, '\0', MAX_STRING);                    // 将name数组初始化为全'\0'
+        memset(name_AO, '\0', MAX_STRING);                    // 将name数组初始化为全'\0'
+        strncpy(name_DO, Grid->output_daily, strlen(Grid->output_daily)); // 复制输出文件名到name数组中
+        strncpy(name_AO, Grid->output_annual, strlen(Grid->output_annual)); // 复制输出文件名到name数组中
 
-        if (strcmp(name_old, name) != 0) // 如果当前文件名与上一个不同
+        if (strcmp(name_old_DO, name_DO) != 0) // 如果当前文件名与上一个不同
         {
             // 打开新的文件并将文件指针存储在files数组中
-            files[Grid->file] = fptr = fopen(name, "w");
-            if (files[Grid->file] == NULL) // 如果文件打开失败
+            files_DO[Grid->file_DO] = fptr_DO = fopen(name_DO, "w");
+            if (files_DO[Grid->file_DO] == NULL) // 如果文件打开失败
             {
-                fprintf(stderr, "Cannot initialize output file %s.\n", name); // 打印错误信息到标准错误
+                fprintf(stderr, "Cannot initialize output file %s.\n", name_DO); // 打印错误信息到标准错误
                 exit(0);                                                      // 退出程序
             }
-            header(files[Grid->file]); // 写文件头
+            header_DO(files_DO[Grid->file_DO]); // 写文件头
         }
         else
         {
             // 如果当前文件名与上一个相同，则复用之前的文件指针
-            if (fptr != NULL)
-                files[Grid->file] = fptr;
+            if (fptr_DO != NULL)
+                files_DO[Grid->file_DO] = fptr_DO;
             else
             {
                 fprintf(stderr, "Cannot initialize file pointer\n"); // 如果文件指针未初始化，打印错误信息
                 exit(0);                                             // 退出程序
             }
         }
+
+        if (strcmp(name_old_AO, name_AO) != 0) // 如果当前文件名与上一个不同
+        {
+            // 打开新的文件并将文件指针存储在files数组中
+            files_AO[Grid->file_AO] = fptr_AO = fopen(name_AO, "w");
+            if (files_AO[Grid->file_AO] == NULL) // 如果文件打开失败
+            {
+                fprintf(stderr, "Cannot initialize output file %s.\n", name_AO); // 打印错误信息到标准错误
+                exit(0);                                                      // 退出程序
+            }
+            header_AO(files_AO[Grid->file_AO]); // 写文件头
+        }
+        else
+        {
+            // 如果当前文件名与上一个相同，则复用之前的文件指针
+            if (fptr_AO != NULL)
+                files_AO[Grid->file_AO] = fptr_AO;
+            else
+            {
+                fprintf(stderr, "Cannot initialize file pointer\n"); // 如果文件指针未初始化，打印错误信息
+                exit(0);                                             // 退出程序
+            }
+        }
+
 
         // allocate memory for the statistical analysis // 为统计分析分配内存
         // Grid->twso = (float*) malloc((Meteo->EndYear - Meteo->StartYear + 1) * sizeof(float));
@@ -100,8 +132,10 @@ int main(int argc, char **argv)
         }
 
         // 准备下一个输出文件名
-        memset(name_old, '\0', MAX_STRING);                    // 将name_old数组重置为全'\0'
-        strncpy(name_old, Grid->output, strlen(Grid->output)); // 将当前输出文件名设置为下次循环的旧文件名
+        memset(name_old_DO, '\0', MAX_STRING);                    // 将name_old数组重置为全'\0'
+        memset(name_old_AO, '\0', MAX_STRING);                    // 将name_old数组重置为全'\0'
+        strncpy(name_old_DO, Grid->output_daily, strlen(Grid->output_daily)); // 将当前输出文件名设置为下次循环的旧文件名
+        strncpy(name_old_AO, Grid->output_annual, strlen(Grid->output_annual)); // 将当前输出文件名设置为下次循环的旧文件名
 
         Grid->flag = 0;    // force end of simulations in endyear// 强制在结束年份结束模拟
         Grid = Grid->next; // 移动到链表的下一个元素
@@ -211,9 +245,6 @@ int main(int argc, char **argv)
                                     RateCalcultionNutrients();
                                     RateCalculationCrop();
 
-                                    /* Write to the output files */ /* 写入输出文件 */
-                                    // Output(output[Grid->file]);
-
                                     /* Calculate LAI */ /* 计算LAI */
                                     Crop->st.LAI = LeaveAreaIndex();
 
@@ -222,7 +253,8 @@ int main(int argc, char **argv)
                                     IntegrationWatBal();
                                     IntegrationNutrients();
 
-                                    Output(files[Grid->file]);
+                                    /* Daily scale results */ /* 状态计算 */
+                                    Output_Daily(files_DO[Grid->file_DO]);
 
                                     /* Update the number of days that the crop has grown*/ /* 更新作物已经生长的天数 */
                                     Crop->GrowthDay++;
@@ -230,12 +262,12 @@ int main(int argc, char **argv)
                                 }
                                 else
                                 {
-                                    /* Write to the output files */ /* 写入输出文件 */
-                                    //Grid->twso[Crop->GrowthDay] = Crop->st.storage;
-                                    //Grid->length[Crop->GrowthDay] = Crop->GrowthDay;
-                                    //if (Meteo->Seasons == Crop->Seasons)
-                                    //{
-                                    //    Output(files[Grid->file]);
+                                    /* Write to the output files: Seasonal scale */ /* 写入输出文件 */
+                                    Grid->twso[Crop->GrowthDay] = Crop->st.storage;
+                                    Grid->length[Crop->GrowthDay] = Crop->GrowthDay;
+                                    // if (Meteo->Seasons == Crop->Seasons)
+                                    // {
+                                    Output_Annual(files_AO[Grid->file_AO]);
                                     //}
 
                                     /* Clean the LeaveProperties */ /* 清理LeaveProperties */
@@ -276,15 +308,25 @@ int main(int argc, char **argv)
     Grid = initial;
 
     /* Close the output files and free the allocated memory */ /* 关闭输出文件并释放分配的内存 */
-    fptr = NULL;
+    fptr_DO = NULL;
+    fptr_AO = NULL;
+
     while (Grid)
     {
-        if (files[Grid->file] != fptr)
+        if (files_DO[Grid->file_DO] != fptr_DO)
         {
-            if (Grid->file < NumberOfFiles)
+            if (Grid->file_DO < NumberOfFiles)
             {
-                fptr = files[Grid->file];
-                fclose(files[Grid->file]); // 关闭文件指针
+                fptr_DO = files_DO[Grid->file_DO];
+                fclose(files_DO[Grid->file_DO]); // 关闭文件指针
+            }
+        }
+        if (files_AO[Grid->file_AO] != fptr_AO)
+        {
+            if (Grid->file_AO < NumberOfFiles)
+            {
+                fptr_AO = files_AO[Grid->file_AO];
+                fclose(files_AO[Grid->file_AO]); // 关闭文件指针
             }
         }
         Grid = Grid->next;

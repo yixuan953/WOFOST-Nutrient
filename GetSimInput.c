@@ -26,7 +26,8 @@ int GetSimInput(char *list) /* 获取模拟输入数据 */
     char soilfile[MAX_STRING];                                             // 存放土壤文件名
     char sitefile[MAX_STRING];                                             // 存放站点文件名
     char management[MAX_STRING];                                           // 存放管理文件名
-    char output[MAX_STRING];                                               // 存放输出文件名
+    char output_daily[MAX_STRING];                                         // 存放输出文件名
+    char output_annual[MAX_STRING];                                        // 存放输出文件名
     char start[MAX_STRING];                                                // 存放开始日期
     char cf[MAX_STRING], sf[MAX_STRING], mf[MAX_STRING], site[MAX_STRING]; // cf, sf, mf, site分别存放作物、土壤、管理和站点的文件名缩写
 
@@ -46,8 +47,8 @@ int GetSimInput(char *list) /* 获取模拟输入数据 */
             continue; // 忽略注释、空行和换行符
         }
 
-        sscanf(line, "%s %s %s %s %s %s %d %s",
-               path, cf, sf, mf, site, start, &Emergence, output); // 解析行数据
+        sscanf(line, "%s %s %s %s %s %s %d %s %s",
+               path, cf, sf, mf, site, start, &Emergence, output_daily, output_annual); // 解析行数据
 
         // 初始化文件名字符串
         memset(cropfile, '\0', MAX_STRING);
@@ -91,19 +92,24 @@ int GetSimInput(char *list) /* 获取模拟输入数据 */
         // 检查文件名长度是否超出限制
         if (strlen(sf) >= MAX_STRING)
             exit(0);
-        if (strlen(output) >= MAX_STRING)
+        if (strlen(output_daily) >= MAX_STRING)
+            exit(0);
+        if (strlen(output_annual) >= MAX_STRING)
             exit(0);
         if (strlen(start) >= MAX_STRING)
             exit(0);
 
         // 初始化输出和开始字符串
-        memset(Grid->output, '\0', MAX_STRING);
+        memset(Grid->output_daily, '\0', MAX_STRING);
+        memset(Grid->output_annual, '\0', MAX_STRING);
         memset(Grid->start, '\0', MAX_STRING);
 
-        strncpy(Grid->output, output, strlen(output)); // Name og output file // 设置输出文件名
+        strncpy(Grid->output_daily, output_daily, strlen(output_daily)); // Name og output file // 设置输出文件名
+        strncpy(Grid->output_annual, output_annual, strlen(output_annual)); // Name og output file // 设置输出文件名
         strncpy(Grid->start, start, strlen(start));    // Starting string month day of the simulations// 设置模拟的开始月日
 
-        Grid->file = count++;        // number of elements in Grid carousel// 设置Grid轮询中的元素数量
+        Grid->file_DO = count++;        // number of elements in Grid carousel// 设置Grid轮询中的元素数量
+        Grid->file_AO = count;        // number of elements in Grid carousel// 设置Grid轮询中的元素数量
         Grid->emergence = Emergence; // Start the simulations at emergence (1) or at sowing (0)// 设置模拟开始时是在发芽(1)还是在播种(0)
         Grid->crp->Sowing = 0;
         Grid->crp->Emergence = 0; // Crop emergence has not yet occurred// 设置作物发芽尚未发生

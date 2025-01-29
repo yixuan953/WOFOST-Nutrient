@@ -20,8 +20,10 @@ extern float notnul(float x);                    // 非空函数，检查x不为
 extern float insw(float x1, float x2, float x3); // 插值开关函数
 extern int leap_year(int year);                  // 判断闰年的函数
 extern void RatesToZero();                       // 将速率设为零的函数
-extern void Output();                            // 输出函数
-extern void header();                            // 生成头信息的函数
+extern void Output_Daily();                            // 输出函数
+extern void Output_Annual();                           // 输出函数
+extern void header_DO();                            // 生成头信息的函数
+extern void header_AO();                            // 生成头信息的函数
 extern int GetSimInput();                        // 获取模拟输入的函数
 extern void GetMeteoInput();                     // 获取气象输入的函数
 extern void IfSowing();                          // 判断是否播种的函数
