@@ -4,14 +4,14 @@
 #include "extern.h"
 #include "wofost.h"
 
-void header_AO(FILE *fp)
+void header_AO(FILE *fp_ao)
 {
-    fprintf(fp,"Lat,Lon,Year,Day,Storage,GrowthDay,N_Uptake,P_Uptake,N_grain,P_grain,N_residue,P_Residue\n");
+    fprintf(fp_ao,"Lat,Lon,Year,Day,Storage,GrowthDay,N_Uptake,P_Uptake,N_grain,P_grain,N_residue,P_Residue\n");
 }
 
-void Output_Annual(FILE *fp)
+void Output_Annual(FILE *fp_ao)
 {      
-         fprintf(fp,"%7.2f\t%7.2f\t%4d\t%3d" // Lat, Lon, MeteoYear, MeteoDay
+         fprintf(fp_ao,"%7.2f\t%7.2f\t%4d\t%3d" // Lat, Lon, MeteoYear, MeteoDay
                 "\t%4.2f\t%4.2d" // Crop stage
                 "\t%4.2f\t%4.2f" //N,P uptake
                 "\t%4.2f\t%4.2f\t%4.2f\t%4.2f\n",//N,P content in grains and residues

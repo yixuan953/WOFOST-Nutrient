@@ -121,9 +121,7 @@ int main(int argc, char **argv)
             }
         }
 
-
         // allocate memory for the statistical analysis // 为统计分析分配内存
-        // Grid->twso = (float*) malloc((Meteo->EndYear - Meteo->StartYear + 1) * sizeof(float));
         for (i = 0; i <= Meteo->Seasons; i++)
         {
             // 初始化统计数据为0
@@ -158,7 +156,7 @@ int main(int argc, char **argv)
         {
             for (Lat = 0; Lat < Meteo->nlat; Lat++)
             {
-                if (Mask[Lon][Lat] != 1) // 如果Mask对应的位置不为1，则跳过当前循环
+                if (HA[Lon][Lat]>0)
                 {
                     continue;
                 }
@@ -185,7 +183,7 @@ int main(int argc, char **argv)
 
                     Grid = initial;
 
-                    /* Set the date struct */ /* 设置日期结构 */
+                    /* Set the date struct */
                     memset(&current_date, 0, sizeof(current_date));
                     current_date.tm_year = MeteoYear[Day] - 1900;
                     current_date.tm_mday = 0 + MeteoDay[Day];
@@ -194,23 +192,27 @@ int main(int argc, char **argv)
                     while (Grid)
                     {
                         /* Get data, states and rates from the Grid structure and */
-                        /* 从Grid结构获取数据、状态和速率，并放置在占位符中 */
                         /* put them in the place holders */
+
                         Crop = Grid->crp;
+                        // Rewrite the TempSum1 and TempSum2 with the data from the mask.nc file
+                        Crop->prm.TempSum1 = tsumEA[Lon][Lat];
+                        Crop->prm.TempSum2 = tsumAM[Lon][Lat];
                         WatBal = Grid->soil;
                         Mng = Grid->mng;
                         Site = Grid->ste;
 
-                        // Start     = Grid->start;/* 在播种或出苗时开始模拟 */
                         Emergence = Grid->emergence; /* Start simulation at sowing or emergence */
 
                         Temp = 0.5 * (Tmax[Lon][Lat][Day] + Tmin[Lon][Lat][Day]);
                         DayTemp = 0.5 * (Tmax[Lon][Lat][Day] + Temp);
 
-                        /* Only simulate between start and end year */ /* 只在开始和结束年份之间模拟 */
+                        /* Only simulate between start and end year */ 
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
-                            /* Determine if the sowing already has occurred */ /* 确定播种是否已经发生 */
+                            // Rewrite the sowing date with the data from the mask .nc file
+                            sprintf(Grid->start, "%02d-%02d", (int)sow_a1[Lon][Lat], (int)((sow_a1[Lon][Lat] - (int)sow_a1[Lon][Lat]) * 100));
+                            /* Determine if the sowing already has occurred */
                             IfSowing(Grid->start);
 
                             /* If sowing has occurred than determine the emergence */ /* 如果播种已经发生，则确定出苗 */

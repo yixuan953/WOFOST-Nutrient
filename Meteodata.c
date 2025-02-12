@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -30,7 +28,6 @@ int GetMeteoData(Weather* meteo)
     int minyear_tmp, maxyear_tmp, minday_tmp, maxday_tmp;
     float ****variable;
     float *data;
-    //float Svap_Tmax, Svap_Tmin, Svap;
     
     // get mask
     // open file
@@ -86,24 +83,57 @@ int GetMeteoData(Weather* meteo)
             maxlon = Longitude[j];
         }
     }
-    
-    // allocate mask
-    if ((retval = nc_inq_varid(ncid, "mask", &varid)))
+
+    // allocate space for variable "sow_a1"
+    if ((retval = nc_inq_varid(ncid, "sow_a1", &varid)))
         ERR(retval);
-    Mask = malloc(lon_length * sizeof(*Mask));
-    if(Mask == NULL){
+    sow_a1 = malloc(lon_length * sizeof(*sow_a1));
+    if(sow_a1 == NULL){
         fprintf(stderr, "Could not malloc");
         exit(1); 
     }
     for (j = 0; j < lon_length; j++) {
-        Mask[j] = malloc(lat_length * sizeof(*Mask[j]));
-        if(Mask == NULL){
+        sow_a1[j] = malloc(lat_length * sizeof(*sow_a1[j]));
+        if(sow_a1 == NULL){
             fprintf(stderr, "Could not malloc");
             exit(1); 
         }
     }
 
-    // Fill mask
+    // Fill sow_a1
+    data = malloc(lon_length * lat_length * sizeof(*data)); // Allocate space to "data"
+    if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    fprintf(stdout, "Started loading forcing data for MASK\n");
+
+    if((retval = nc_get_var_float(ncid, varid, data)))  // Where the value of sow_a1 is extracted to data
+        ERR(retval);
+
+    for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+            sow_a1[j][k] = data[k * lon_length + j];
+        }
+    }
+    free(data);
+
+    // allocate HA
+    if ((retval = nc_inq_varid(ncid, "HA", &varid)))
+        ERR(retval);
+    HA = malloc(lon_length * sizeof(*HA));
+    if(HA == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    for (j = 0; j < lon_length; j++) {
+        HA[j] = malloc(lat_length * sizeof(*HA[j]));
+        if(HA == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+    }
+    // Fill HA
     data = malloc(lon_length * lat_length * sizeof(*data));
     if(data == NULL){
         fprintf(stderr, "Could not malloc");
@@ -114,14 +144,73 @@ int GetMeteoData(Weather* meteo)
         ERR(retval);
     for (k = 0; k < lat_length; k++) {
         for (j = 0; j < lon_length; j++) {
-            Mask[j][k] = data[k * lon_length + j];
+            HA[j][k] = data[k * lon_length + j];
         }
     }
     free(data);
-    
-    // close file
-    if ((retval = nc_close(ncid)))
-       ERR(retval);
+
+
+    // allocate tsumEA
+    if ((retval = nc_inq_varid(ncid, "tsumEA", &varid)))
+        ERR(retval);
+    tsumEA = malloc(lon_length * sizeof(*tsumEA));
+    if(tsumEA == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    for (j = 0; j < lon_length; j++) {
+        tsumEA[j] = malloc(lat_length * sizeof(*tsumEA[j]));
+        if(tsumEA == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+    }
+    // Fill tsumEA
+    data = malloc(lon_length * lat_length * sizeof(*data));
+    if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    fprintf(stdout, "Started loading forcing data for MASK\n");
+    if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+    for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+            tsumEA[j][k] = data[k * lon_length + j];
+        }
+    }
+    free(data);
+
+    // allocate tsumAM
+    if ((retval = nc_inq_varid(ncid, "tsumAM", &varid)))
+        ERR(retval);
+    tsumAM = malloc(lon_length * sizeof(*tsumAM));
+    if(tsumAM == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    for (j = 0; j < lon_length; j++) {
+        tsumAM[j] = malloc(lat_length * sizeof(*tsumAM[j]));
+        if(tsumAM == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+    }
+    // Fill tsumAM
+    data = malloc(lon_length * lat_length * sizeof(*data));
+    if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    fprintf(stdout, "Started loading forcing data for MASK\n");
+    if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+    for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+            tsumAM[j][k] = data[k * lon_length + j];
+        }
+    }
+    free(data);
     
     for (i = 0; i < WEATHER_NTYPES; i++) {
         printf("%30s\n",meteo->file[i] );
@@ -276,7 +365,7 @@ int GetMeteoData(Weather* meteo)
             ERR(retval);
         for (k = 0; k < lat_length; k++) {
             for (j = 0; j < lon_length; j++) {
-                if (Mask[j][k] >= 1) {
+                if (HA[j][k] > 0) {
                     for (l = 0; l < time_length; l++) {
                         (*variable)[j][k][l] = 
                                 data[l * lon_length * lat_length + k * lon_length + j];
@@ -288,8 +377,7 @@ int GetMeteoData(Weather* meteo)
                 }
             }
         }
-        free(data);
-        
+        free(data);  
         // close file
         if ((retval = nc_close(ncid)))
            ERR(retval);
@@ -312,7 +400,7 @@ int GetMeteoData(Weather* meteo)
             exit(1); 
         }
         for (k = 0; k < lat_length; k++) {
-            if (Mask[j][k] >= 1) {
+            if (HA[j][k] > 0) {
                 AngstA[j][k] = 0.4885 - 0.0052 * Latitude[k];
                 AngstB[j][k] =  0.1563 + 0.0074 * Longitude[k];
                 // TODO: temporary needs to be fixed
@@ -329,7 +417,7 @@ int GetMeteoData(Weather* meteo)
     // adjust data
     for (j = 0; j < lon_length; j++) {
         for (k = 0; k < lat_length; k++) {
-            if (Mask[j][k] >= 1) {
+            if (HA[j][k] > 0) {
             for (l = 0; l < time_length; l++) {
                 Tmin[j][k][l] = roundz(Tmin[j][k][l], 1); // [degree C]
                 Tmax[j][k][l] = roundz(Tmax[j][k][l], 1); // [degree C]

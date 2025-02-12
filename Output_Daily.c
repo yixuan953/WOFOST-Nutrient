@@ -4,15 +4,15 @@
 #include "extern.h"
 #include "wofost.h"
 
-void header_DO(FILE *fp)
+void header_DO(FILE *fp_do)
 {
-    fprintf(fp,"Lat,Lon,Year,Day,Dev_Stage,Trans,EvaWater,EvaSoil,N_demand,P_demand\n");
+    fprintf(fp_do,"Lat,Lon,Year,Day,Dev_Stage,tsum_emergence,Trans,EvaWater,EvaSoil,N_demand,P_demand\n");
 }
 
-void Output_Daily(FILE *fp)
+void Output_Daily(FILE *fp_do)
 {      
-         fprintf(fp,"%7.2f\t%7.2f\t%4d\t%3d" // Lat, Lon, MeteoYear, MeteoDay
-                "\t%4.2f" // Crop stage
+         fprintf(fp_do,"%7.2f\t%7.2f\t%4d\t%3d" // Lat, Lon, MeteoYear, MeteoDay
+                "\t%4.2f\t%4.2f" // Crop stage, Crop tsum
                 "\t%4.2f\t%4.2f\t%4.2f" // Water demand
                 "\t%4.2f\t%4.2f\n", //N,P demand
                 Latitude[Lat],
@@ -20,6 +20,7 @@ void Output_Daily(FILE *fp)
                 MeteoYear[Day],
                 MeteoDay[Day],
                 Crop->st.Development,
+                Crop->TSumEmergence,
                 WatBal->rt.Transpiration,
                 //Penman.E0 * exp(-0.75 * KDiffuse * Crop->st.LAI),
                 //max(0., Penman.ES0 * exp(-0.75 * KDiffuse * Crop->st.LAI)),

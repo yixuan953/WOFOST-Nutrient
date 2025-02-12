@@ -26,8 +26,7 @@ int EmergenceCrop(int Emergence)
             }
             else
             {
-                DeltaTempSum = limit(0, Crop->prm.TempEffMax - Crop->prm.TempBaseEmergence, 
-                Temp - Crop->prm.TempBaseEmergence);
+                DeltaTempSum = limit(0, Crop->prm.TempEffMax - Crop->prm.TempBaseEmergence, Temp - Crop->prm.TempBaseEmergence);
                 Crop->TSumEmergence += DeltaTempSum;
                 if (Crop->TSumEmergence >= Crop->prm.TSumEmergence)
                 {

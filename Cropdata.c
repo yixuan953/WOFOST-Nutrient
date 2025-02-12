@@ -154,7 +154,6 @@ void GetCropData(Plant *CROP, char *cropfile)
     CROP->NutrientStress = 1.;
     CROP->NPK_Indx =1;
 
-
     /* STATES */  
     /* Set the initial growth states to zero */
     CROP->st.roots   = 0.;

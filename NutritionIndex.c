@@ -83,7 +83,7 @@ void NutritionINDX()
     Crop->NPK_Indx = (Crop->NPK_Indx < Crop->K_st.Indx) ? Crop->NPK_Indx : Crop->K_st.Indx;
     
     /* Nutrient reduction factor */
-    Crop->NutrientStress = limit(0., 1.0, 1.-Crop->prm.NLUE*pow((1.0001-Crop->NPK_Indx),2));
-    Crop->NutrientStress = 1;
+    Crop->NutrientStress = limit(0., 1.0, 1.-Crop->prm.NLUE*pow((1.0001-Crop->NPK_Indx),2)); // Could be very close to 1 if Crop->NPK_Indx = 1
+    Crop->NutrientStress = 1.0;
     Crop->NPK_Indx = 1.0;
 }

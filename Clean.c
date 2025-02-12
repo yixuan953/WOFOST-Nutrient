@@ -331,7 +331,7 @@ void Clean(SimUnit *Grid)
     while (Grid)
     {
        GridHead = Grid;
-       free( Grid->crp);
+       free(Grid->crp);
        free(Grid->mng);
        free(Grid->soil);
        free(Grid->ste);
@@ -370,7 +370,10 @@ void CleanMeteo(Weather * Meteo)
         free(AngstA[j]);
         free(AngstB[j]);
         free(Altitude[j]);
-        free(Mask[j]);
+        free(HA[j]);
+        free(sow_a1[j]);
+        free(tsumEA[j]);
+        free(tsumAM[j]);
     }
     free(Tmin);
     free(Tmax);
@@ -382,5 +385,8 @@ void CleanMeteo(Weather * Meteo)
     free(AngstA);
     free(AngstB);
     free(Altitude);
-    free(Mask);
+    free(HA);
+    free(sow_a1);
+    free(tsumEA);
+    free(tsumAM);
 }
