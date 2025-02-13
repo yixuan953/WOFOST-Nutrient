@@ -454,12 +454,10 @@ int MeteoDay[METEO_LENGTH];
 float CO2;
 double Longitude[DOMAIN_LENGTH], Latitude[DOMAIN_LENGTH];
 // --- I added these variables to the original crop mask.nc file ----
-float **HA; // Average sowing date: This will replace the sowing date
-float **sow_a1; // Average sowing date: This will replace the sowing date
-float **tsumEA; // TSUM1
-float **tsumAM; // TSUM2
-// float **NPInput; // If this grid has NP input
-// float **Irri; // If this gird has irrigation
+float ***sow_a1; // Average sowing date: This will replace the sowing date
+float ***HA; // Average sowing date: This will replace the sowing date
+float ***tsumEA; // TSUM1
+float ***tsumAM; // TSUM2
 // --------------------------------------------------------------------
 float **Altitude;
 float **AngstA;

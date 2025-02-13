@@ -156,7 +156,7 @@ int main(int argc, char **argv)
         {
             for (Lat = 0; Lat < Meteo->nlat; Lat++)
             {
-                if (HA[Lon][Lat]>0)
+                if (HA[Lon][Lat][0]>0)
                 {
                     continue;
                 }
@@ -196,8 +196,8 @@ int main(int argc, char **argv)
 
                         Crop = Grid->crp;
                         // Rewrite the TempSum1 and TempSum2 with the data from the mask.nc file
-                        Crop->prm.TempSum1 = tsumEA[Lon][Lat];
-                        Crop->prm.TempSum2 = tsumAM[Lon][Lat];
+                        Crop->prm.TempSum1 = tsumEA[Lon][Lat][0];
+                        Crop->prm.TempSum2 = tsumAM[Lon][Lat][0];
                         WatBal = Grid->soil;
                         Mng = Grid->mng;
                         Site = Grid->ste;
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
                             // Rewrite the sowing date with the data from the mask .nc file
-                            sprintf(Grid->start, "%02d-%02d", (int)sow_a1[Lon][Lat], (int)((sow_a1[Lon][Lat] - (int)sow_a1[Lon][Lat]) * 100));
+                            // sprintf(Grid->start, "%02d-%02d", (int)sow_a1[Lon][Lat], (int)((sow_a1[Lon][Lat] - (int)sow_a1[Lon][Lat]) * 100));
                             /* Determine if the sowing already has occurred */
                             IfSowing(Grid->start);
 
