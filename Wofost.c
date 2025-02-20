@@ -19,7 +19,9 @@ int main(int argc, char **argv)
     Weather *head;           // 声明一个指向Weather类型的指针，可能用于链表的头指针，用来存储天气数据。
     Green *wipe;             // 声明一个指向Green类型的指针，Green可能是一个用户定义的数据类型。
 
-    int CycleLength = 300; // 声明一个整型变量CycleLength并初始化为300，可能表示一个周期的长度。
+
+    // Yangtze: maize-150; wheat-250; rice-170; soybean-160
+    int CycleLength = 170; // 声明一个整型变量CycleLength并初始化为300，可能表示一个周期的长度。
     int NumberOfFiles;     // 声明一个整型变量NumberOfFiles，可能用来存储文件的数量。
     int Emergence;         // 声明一个整型变量Emergence，其具体用途不明。
     int i;                 // 声明一个整型变量i，通常用作循环计数。
@@ -156,16 +158,17 @@ int main(int argc, char **argv)
         {
             for (Lat = 0; Lat < Meteo->nlat; Lat++)
             {
-                if (HA[Lon][Lat][0]>0)
+                if (HA[Lon][Lat]<500.0 || sow_a1[Lon][Lat]<0.0 || tsumEA[Lon][Lat]<0.0 || tsumAM[Lon][Lat]<0.0) // Start the simulation if all variables have the value
                 {
                     continue;
                 }
 
                 // Go back to the beginning of the list and rest grid value flag,and twso and length
                 // 返回到列表的开始并重置Grid的标志、twso和length
-                Grid = initial;
-                while (Grid)
-                {
+                 Grid = initial;
+                
+                 while (Grid)
+                 {
                     Grid->flag = 0;
 
                     for (i = 0; i <= Meteo->Seasons; i++)
@@ -175,11 +178,12 @@ int main(int argc, char **argv)
                         Grid->crp->Seasons = 1;
                     }
                     Grid = Grid->next;
-                }
+                 }
+                               
 
-                for (Day = 0; Day < Meteo->ntime; Day++)
-                // assume that the series start January first // 假设系列从一月一日开始
-                {
+                 for (Day = 0; Day < Meteo->ntime; Day++)
+                 // assume that the series start January first // 假设系列从一月一日开始
+                 {
 
                     Grid = initial;
 
@@ -195,9 +199,9 @@ int main(int argc, char **argv)
                         /* put them in the place holders */
 
                         Crop = Grid->crp;
-                        // Rewrite the TempSum1 and TempSum2 with the data from the mask.nc file
-                        Crop->prm.TempSum1 = tsumEA[Lon][Lat][0];
-                        Crop->prm.TempSum2 = tsumAM[Lon][Lat][0];
+                        Crop->prm.TempSum1 = tsumEA[Lon][Lat];
+                        Crop->prm.TempSum2 = tsumAM[Lon][Lat];
+                        
                         WatBal = Grid->soil;
                         Mng = Grid->mng;
                         Site = Grid->ste;

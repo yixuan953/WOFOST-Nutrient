@@ -1,10 +1,11 @@
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <netcdf.h>
 #include <math.h>
-#include <netcdf.h>
 #include "wofost.h"
 #include "extern.h"
 
@@ -21,13 +22,14 @@ int GetMeteoData(Weather* meteo)
     size_t j, k, l;
     int retval;
     int ncid, lat_dimid, lon_dimid, time_dimid;
-    int lat_varid, lon_varid, time_varid, varid,sow_a1_varid, HA_varid, tsumAM_varid, tsumEA_varid;
+    int lat_varid, lon_varid, varid;
     size_t lat_length, lon_length, time_length;
     double minlat, minlon, maxlat, maxlon;
     double minlat_tmp, minlon_tmp, maxlat_tmp, maxlon_tmp;
     int minyear_tmp, maxyear_tmp, minday_tmp, maxday_tmp;
     float ****variable;
     float *data;
+    //float Svap_Tmax, Svap_Tmin, Svap;
     
     // get mask
     // open file
@@ -39,13 +41,9 @@ int GetMeteoData(Weather* meteo)
         ERR(retval);
     if ((retval = nc_inq_dimid(ncid, "lon", &lon_dimid)))
         ERR(retval);
-    if ((retval = nc_inq_dimid(ncid, "time", &time_dimid)))
-        ERR(retval);
     if ((retval = nc_inq_dimlen(ncid, lat_dimid, &lat_length)))
        ERR(retval); 
     if ((retval = nc_inq_dimlen(ncid, lon_dimid, &lon_length)))
-       ERR(retval);
-    if ((retval = nc_inq_dimlen(ncid, time_dimid, &time_length)))
        ERR(retval);
     if (lat_length > DOMAIN_LENGTH) {
         fprintf(stderr, "Latitude domain %zu is bigger than maximum %d\n", 
@@ -57,20 +55,17 @@ int GetMeteoData(Weather* meteo)
                 lon_length, DOMAIN_LENGTH);
         exit(1); 
     }
-
     meteo->nlat = lat_length;
     meteo->nlon = lon_length;
     if ((retval = nc_inq_varid(ncid, "lat", &lat_varid)))
         ERR(retval);
     if ((retval = nc_inq_varid(ncid, "lon", &lon_varid)))
         ERR(retval);
-    if ((retval = nc_inq_varid(ncid, "time", &time_varid)))
-        ERR(retval);
     if ((retval = nc_get_var_double(ncid, lat_varid, &Latitude[0])))
        ERR(retval);
     if ((retval = nc_get_var_double(ncid, lon_varid, &Longitude[0])))
        ERR(retval);
-
+    
     // check lat & lon
     minlat = minlon = 9999;
     maxlat = maxlon = -9999;
@@ -82,7 +77,6 @@ int GetMeteoData(Weather* meteo)
             maxlat = Latitude[j];
         }
     }
-
     for (j = 0; j < lon_length; j++) {
         if (Longitude[j] < minlon) {
             minlon = Longitude[j];
@@ -91,188 +85,139 @@ int GetMeteoData(Weather* meteo)
             maxlon = Longitude[j];
         }
     }
-
-    // allocate space for variable "sow_a1"
-    if ((retval = nc_inq_varid(ncid, "sow_a1", &sow_a1_varid)))
+    
+    // allocate sow_a1
+    if ((retval = nc_inq_varid(ncid, "sow_a1", &varid)))
         ERR(retval);
     sow_a1 = malloc(lon_length * sizeof(*sow_a1));
-
     if(sow_a1 == NULL){
         fprintf(stderr, "Could not malloc");
         exit(1); 
+    }
+    for (j = 0; j < lon_length; j++) {
+        sow_a1[j] = malloc(lat_length * sizeof(*sow_a1[j]));
+        if(sow_a1 == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
         }
-        for (j = 0; j < lon_length; j++) {
-            sow_a1[j] = malloc(lat_length * sizeof(*sow_a1[j]));
-            if(sow_a1[j] == NULL){
-                fprintf(stderr, "Could not malloc");
-                exit(1); 
-            }
-            for (k = 0; k < lat_length; k++) {
-                sow_a1[j][k] = malloc(time_length * sizeof(*sow_a1[j][k]));
-                if(sow_a1[j][k] == NULL){
-                    fprintf(stderr, "Could not malloc");
-                    exit(1); 
-                }
-            }
-        }
-
-    // Allocate space to "data"
-    data = malloc(lon_length * lat_length * time_length * sizeof(*data)); // Allocate space to "data"
+    }
+    // Fill sow_a1
+    data = malloc(lon_length * lat_length * sizeof(*data));
     if(data == NULL){
         fprintf(stderr, "Could not malloc");
         exit(1); 
     }
     fprintf(stdout, "Started loading forcing data for sow_a1\n");
-
-    if ((retval = nc_get_var_float(ncid, sow_a1_varid, data))) {
-        ERR(retval);  // Handle any errors that occur during the call
-    }
-    // Fill sow_a1
+    if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
     for (k = 0; k < lat_length; k++) {
         for (j = 0; j < lon_length; j++) {
-            for (l = 0; l < time_length; l++) {
-               sow_a1[j][k][l] = data[l * lon_length * lat_length + k * lon_length + j];}
+            sow_a1[j][k] = data[k * lon_length + j];
+            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, sow_a1[j][k], Latitude[k], Longitude[j]);
         }
     }
     free(data);
 
-    // allocate space for variable "HA
-    if ((retval = nc_inq_varid(ncid, "HA", &HA_varid)))
+    // allocate HA
+    if ((retval = nc_inq_varid(ncid, "HA", &varid)))
         ERR(retval);
     HA = malloc(lon_length * sizeof(*HA));
-
     if(HA == NULL){
         fprintf(stderr, "Could not malloc");
         exit(1); 
-        }
-        for (j = 0; j < lon_length; j++) {
-            HA[j] = malloc(lat_length * sizeof(*HA[j]));
-            if(HA[j] == NULL){
-                fprintf(stderr, "Could not malloc");
-                exit(1); 
-            }
-            for (k = 0; k < lat_length; k++) {
-                HA[j][k] = malloc(time_length * sizeof(*HA[j][k]));
-                if(HA[j][k] == NULL){
-                    fprintf(stderr, "Could not malloc");
-                    exit(1); 
-                }
-            }
-        }
-
-    // Allocate space to "data"
-    data = malloc(lon_length * lat_length * time_length * sizeof(*data)); // Allocate space to "data"
-    if(data == NULL){
-        fprintf(stderr, "Could not malloc");
-        exit(1); 
     }
-    fprintf(stdout, "Started loading forcing data for sow_a1\n");
-
-    if ((retval = nc_get_var_float(ncid, HA_varid, data))) {
-        ERR(retval);  // Handle any errors that occur during the call
+    for (j = 0; j < lon_length; j++) {
+        HA[j] = malloc(lat_length * sizeof(*HA[j]));
+        if(HA == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
     }
     // Fill HA
+    data = malloc(lon_length * lat_length * sizeof(*data));
+    if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    fprintf(stdout, "Started loading forcing data for HA\n");
+    if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
     for (k = 0; k < lat_length; k++) {
         for (j = 0; j < lon_length; j++) {
-            for (l = 0; l < time_length; l++) {
-               HA[j][k][l] = data[l * lon_length * lat_length + k * lon_length + j];}
+            HA[j][k] = data[k * lon_length + j];
+            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, HA[j][k], Latitude[k], Longitude[j]);
         }
     }
     free(data);
 
-    // allocate space for variable "tsumEA"
-    if ((retval = nc_inq_varid(ncid, "tsumEA", &tsumEA_varid)))
-        ERR(retval);
+    // allocate tsumEA
+    if ((retval = nc_inq_varid(ncid, "tsumEA", &varid)))
+       ERR(retval);
     tsumEA = malloc(lon_length * sizeof(*tsumEA));
-
     if(tsumEA == NULL){
-        fprintf(stderr, "Could not malloc");
-        exit(1); 
-        }
-        for (j = 0; j < lon_length; j++) {
-            tsumEA[j] = malloc(lat_length * sizeof(*tsumEA[j]));
-            if(tsumEA[j] == NULL){
-                fprintf(stderr, "Could not malloc");
-                exit(1); 
-            }
-            for (k = 0; k < lat_length; k++) {
-                tsumEA[j][k] = malloc(time_length * sizeof(*tsumEA[j][k]));
-                if(tsumEA[j][k] == NULL){
-                    fprintf(stderr, "Could not malloc");
-                    exit(1); 
-                }
-            }
-        }
-
-    // Allocate space to "data"
-    data = malloc(lon_length * lat_length * time_length * sizeof(*data)); // Allocate space to "data"
+       fprintf(stderr, "Could not malloc");
+       exit(1); 
+    }
+    for (j = 0; j < lon_length; j++) {
+       tsumEA[j] = malloc(lat_length * sizeof(*tsumEA[j]));
+       if(tsumEA == NULL){
+           fprintf(stderr, "Could not malloc");
+           exit(1); 
+       }
+    }
+   // Fill tsumEA
+    data = malloc(lon_length * lat_length * sizeof(*data));
     if(data == NULL){
-        fprintf(stderr, "Could not malloc");
-        exit(1); 
+       fprintf(stderr, "Could not malloc");
+       exit(1); 
     }
-    fprintf(stdout, "Started loading forcing data for sow_a1\n");
-
-    if ((retval = nc_get_var_float(ncid, tsumEA_varid, data))) {
-        ERR(retval);  // Handle any errors that occur during the call
-    }
-    // Fill tsumEA
+   fprintf(stdout, "Started loading forcing data for tsumEA\n");
+    if((retval = nc_get_var_float(ncid, varid, data)))
+       ERR(retval);
     for (k = 0; k < lat_length; k++) {
-        for (j = 0; j < lon_length; j++) {
-            for (l = 0; l < time_length; l++) {
-               tsumEA[j][k][l] = data[l * lon_length * lat_length + k * lon_length + j];}
-        }
+       for (j = 0; j < lon_length; j++) {
+           tsumEA[j][k] = data[k * lon_length + j];
+           // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, tsumEA[j][k], Latitude[k], Longitude[j]);
+       }
     }
     free(data);
 
-
-    // allocate space for variable "tsumAM"
-    if ((retval = nc_inq_varid(ncid, "tsumAM", &tsumAM_varid)))
-        ERR(retval);
+    // allocate tsumAM
+    if ((retval = nc_inq_varid(ncid, "tsumAM", &varid)))
+       ERR(retval);
     tsumAM = malloc(lon_length * sizeof(*tsumAM));
-
     if(tsumAM == NULL){
-        fprintf(stderr, "Could not malloc");
-        exit(1); 
-        }
-        for (j = 0; j < lon_length; j++) {
-            tsumAM[j] = malloc(lat_length * sizeof(*tsumAM[j]));
-            if(tsumAM[j] == NULL){
-                fprintf(stderr, "Could not malloc");
-                exit(1); 
-            }
-            for (k = 0; k < lat_length; k++) {
-                tsumAM[j][k] = malloc(time_length * sizeof(*tsumAM[j][k]));
-                if(tsumAM[j][k] == NULL){
-                    fprintf(stderr, "Could not malloc");
-                    exit(1); 
-                }
-            }
-        }
-
-    // Allocate space to "data"
-    data = malloc(lon_length * lat_length * time_length * sizeof(*data)); // Allocate space to "data"
+       fprintf(stderr, "Could not malloc");
+       exit(1); 
+    }
+    for (j = 0; j < lon_length; j++) {
+    tsumAM[j] = malloc(lat_length * sizeof(*tsumAM[j]));
+       if(tsumAM == NULL){
+           fprintf(stderr, "Could not malloc");
+           exit(1); 
+       }
+    }
+   // Fill tsumEA
+   data = malloc(lon_length * lat_length * sizeof(*data));
     if(data == NULL){
-        fprintf(stderr, "Could not malloc");
-        exit(1); 
+       fprintf(stderr, "Could not malloc");
+       exit(1); 
     }
-    fprintf(stdout, "Started loading forcing data for sow_a1\n");
-
-    if ((retval = nc_get_var_float(ncid, tsumAM_varid, data))) {
-        ERR(retval);  // Handle any errors that occur during the call
-    }
-    // Fill tsumAM
+    fprintf(stdout, "Started loading forcing data for tsumAM\n");
+    if((retval = nc_get_var_float(ncid, varid, data)))
+       ERR(retval);
     for (k = 0; k < lat_length; k++) {
-        for (j = 0; j < lon_length; j++) {
-            for (l = 0; l < time_length; l++) {
-               tsumAM[j][k][l] = data[l * lon_length * lat_length + k * lon_length + j];}
-        }
+       for (j = 0; j < lon_length; j++) {
+            tsumAM[j][k] = data[k * lon_length + j];
+            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, tsumAM[j][k], Latitude[k], Longitude[j]);
+       }
     }
     free(data);
-    
+
     // close file
     if ((retval = nc_close(ncid)))
-       ERR(retval);   
-
+       ERR(retval);
+    
     for (i = 0; i < WEATHER_NTYPES; i++) {
         printf("%30s\n",meteo->file[i] );
         // open file
@@ -426,7 +371,7 @@ int GetMeteoData(Weather* meteo)
             ERR(retval);
         for (k = 0; k < lat_length; k++) {
             for (j = 0; j < lon_length; j++) {
-                if (HA[j][k][0] > 0) {
+                if (HA[j][k] > 0) {
                     for (l = 0; l < time_length; l++) {
                         (*variable)[j][k][l] = 
                                 data[l * lon_length * lat_length + k * lon_length + j];
@@ -438,7 +383,8 @@ int GetMeteoData(Weather* meteo)
                 }
             }
         }
-        free(data);  
+        free(data);
+        
         // close file
         if ((retval = nc_close(ncid)))
            ERR(retval);
@@ -461,7 +407,7 @@ int GetMeteoData(Weather* meteo)
             exit(1); 
         }
         for (k = 0; k < lat_length; k++) {
-            if (HA[j][k][0] > 0) {
+            if (HA[j][k] > 0) {
                 AngstA[j][k] = 0.4885 - 0.0052 * Latitude[k];
                 AngstB[j][k] =  0.1563 + 0.0074 * Longitude[k];
                 // TODO: temporary needs to be fixed
@@ -478,7 +424,7 @@ int GetMeteoData(Weather* meteo)
     // adjust data
     for (j = 0; j < lon_length; j++) {
         for (k = 0; k < lat_length; k++) {
-            if (HA[j][k][0] > 0) {
+            if (HA[j][k] > 0) {
             for (l = 0; l < time_length; l++) {
                 Tmin[j][k][l] = roundz(Tmin[j][k][l], 1); // [degree C]
                 Tmax[j][k][l] = roundz(Tmax[j][k][l], 1); // [degree C]
@@ -489,7 +435,7 @@ int GetMeteoData(Weather* meteo)
                 }
             }
         }
-    }   
+    }
+    
     return 1;
 }
-

@@ -1,4 +1,4 @@
-/lustre/nobackup/WUR/ESG/zhou111/Data/Climate_Forcing/WFDE5/Yangtze/ 1990 2019 10 /lustre/nobackup/WUR/ESG/zhou111/Data/Crop_Mask/CaseStudy/Yangtze/Yangtze_maize_mask.nc
+/lustre/nobackup/WUR/ESG/zhou111/Data/Climate_Forcing/WFDE5/Yangtze/ 1990 2019 10 /lustre/nobackup/WUR/ESG/zhou111/Data/Crop_Mask/CaseStudy/Yangtze/Yangtze_winterwheat_mask.nc
 Yangtze_Tmin_daily_1990-2019.nc  TMIN tasmin
 Yangtze_Tmax_daily_1990-2019.nc  TMAX tasmax
 Yangtze_SWdown_daily_1990-2019.nc  RADIATION SWdown
