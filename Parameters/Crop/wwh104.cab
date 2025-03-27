@@ -1,4 +1,4 @@
-CRPNAM='Winter wheat 101, N-U.K., Denmark'
+CRPNAM='Winter wheat 104,  Central Germany, northern France '
 
 ** emergence
 TBASEM   =  0.0    ! lower threshold temp. for emergence [cel]
@@ -8,10 +8,10 @@ TSUMEM  =  120.0.     ! temperature sum from sowing to emergence [cel d]
 ** phenology
 IDSL     =   2      ! indicates whether pre-anthesis development depends
                     ! on temp. (=0), daylength (=1) , or both (=2)
-DLO      = 16.8    ! optimum daylength for development [hr]
+DLO      = 15.8    ! optimum daylength for development [hr]
 DLC      =  8.0  ! critical daylength (lower threshold) [hr]
-VERNBASE = 10.0 ! base vernalization requirement [d]
-VERNSAT = 49.0 ! Saturated vernalization requirment [d]
+VERNBASE = 8.0 ! base vernalization requirement [d]
+VERNSAT = 41.0 ! Saturated vernalization requirment [d]
 VERNDVS = 0.30 ! Crivital vernalization requiment [d]
 VERNRTB = 
                -8.0,  0.0,
@@ -20,8 +20,8 @@ VERNRTB =
                10.0,  1.0,
                17.0,  0.0,
                20.0,  0.0
-TSUM1    = 543.     ! temperature sum from emergence to anthesis [cel d]
-TSUM2    = 1194.     ! temperature sum from anthesis to maturity [cel d]
+TSUM1    = 706.     ! temperature sum from emergence to anthesis [cel d]
+TSUM2    = 950.     ! temperature sum from anthesis to maturity [cel d]
 DTSMTB   =   0.00,    0.00,     ! daily increase in temp. sum 
             30.00,   30.00,     ! as function of av. temp. [cel; cel d]
             45.00,   30.00

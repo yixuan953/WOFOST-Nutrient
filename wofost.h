@@ -455,7 +455,7 @@ float CO2;
 double Longitude[DOMAIN_LENGTH], Latitude[DOMAIN_LENGTH];
 // --- I added these variables to the original crop mask.nc file ----
 float **sow_a1; // Average sowing date: This will replace the sowing date
-float **HA; // Harvest area
+// float **HA; // Harvest area
 float **tsumEA; // TSUM1
 float **tsumAM; // TSUM2
 // --------------------------------------------------------------------

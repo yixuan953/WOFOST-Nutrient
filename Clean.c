@@ -370,7 +370,7 @@ void CleanMeteo(Weather * Meteo)
         free(AngstA[j]);
         free(AngstB[j]);
         free(Altitude[j]);
-        free(HA[j]);
+        //free(HA[j]);
         free(sow_a1[j]);
         free(tsumEA[j]);
         free(tsumAM[j]);
@@ -385,7 +385,7 @@ void CleanMeteo(Weather * Meteo)
     free(AngstA);
     free(AngstB);
     free(Altitude);
-    free(HA);
+    // free(HA);
     free(sow_a1);
     free(tsumEA);
     free(tsumAM);

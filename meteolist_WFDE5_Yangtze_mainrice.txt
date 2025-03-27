@@ -1,4 +1,4 @@
-/lustre/nobackup/WUR/ESG/zhou111/Data/Climate_Forcing/WFDE5/Yangtze/ 1985 2019 32 /lustre/nobackup/WUR/ESG/zhou111/Model_Results/1_Yp_WOFOST/Yangtze/mainrice_Yp_his.nc
+/lustre/nobackup/WUR/ESG/zhou111/Data/Climate_Forcing/WFDE5/Yangtze/ 1985 2019 32 /lustre/nobackup/WUR/ESG/zhou111/Model_Results/1_Yp_WOFOST/Yangtze/Yangtze_mainrice_Yp_mask.nc
 Yangtze_Tmin_daily_1985-2019.nc  TMIN tasmin
 Yangtze_Tmax_daily_1985-2019.nc  TMAX tasmax
 Yangtze_SWdown_daily_1985-2019.nc  RADIATION SWdown

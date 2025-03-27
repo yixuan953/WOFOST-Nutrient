@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <float.h>
+#include <math.h>
 #include "wofost.h"
 #include "extern.h"
 
@@ -20,8 +21,8 @@ int main(int argc, char **argv)
     Green *wipe;             // 声明一个指向Green类型的指针，Green可能是一个用户定义的数据类型。
 
 
-    // Yangtze: maize-150; wheat-250; rice-170; soybean-160
-    int CycleLength = 170; // 声明一个整型变量CycleLength并初始化为300，可能表示一个周期的长度。
+    // maize-150; wheat-300; rice-180; soybean-140
+    int CycleLength = 180; // 声明一个整型变量CycleLength并初始化为300，可能表示一个周期的长度。
     int NumberOfFiles;     // 声明一个整型变量NumberOfFiles，可能用来存储文件的数量。
     int Emergence;         // 声明一个整型变量Emergence，其具体用途不明。
     int i;                 // 声明一个整型变量i，通常用作循环计数。
@@ -158,7 +159,7 @@ int main(int argc, char **argv)
         {
             for (Lat = 0; Lat < Meteo->nlat; Lat++)
             {
-                if (HA[Lon][Lat]<500.0 || sow_a1[Lon][Lat]<0.0 || tsumEA[Lon][Lat]<0.0 || tsumAM[Lon][Lat]<0.0) // Start the simulation if all variables have the value
+                if (isnan(sow_a1[Lon][Lat])) // Start the simulation if all variables have the value
                 {
                     continue;
                 }
@@ -166,10 +167,15 @@ int main(int argc, char **argv)
                 // Go back to the beginning of the list and rest grid value flag,and twso and length
                 // 返回到列表的开始并重置Grid的标志、twso和length
                  Grid = initial;
-                
+              
                  while (Grid)
                  {
                     Grid->flag = 0;
+                    char* sow_date = DekadDate(sow_a1[Lon][Lat]);
+                    //printf("%s %4.2f %s\n", Grid->start, sow_a1[Lon][Lat], sow_date);
+                    strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
+                    //printf("%s %4.2f %s\n", Grid->start, sow_a1[Lon][Lat], sow_date);
+                    free(sow_date);
 
                     for (i = 0; i <= Meteo->Seasons; i++)
                     {
@@ -197,7 +203,7 @@ int main(int argc, char **argv)
                     {
                         /* Get data, states and rates from the Grid structure and */
                         /* put them in the place holders */
-
+                        
                         Crop = Grid->crp;
                         Crop->prm.TempSum1 = tsumEA[Lon][Lat];
                         Crop->prm.TempSum2 = tsumAM[Lon][Lat];
@@ -214,10 +220,9 @@ int main(int argc, char **argv)
                         /* Only simulate between start and end year */ 
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
-                            // Rewrite the sowing date with the data from the mask .nc file
-                            // sprintf(Grid->start, "%02d-%02d", (int)sow_a1[Lon][Lat], (int)((sow_a1[Lon][Lat] - (int)sow_a1[Lon][Lat]) * 100));
+                                           
                             /* Determine if the sowing already has occurred */
-                            IfSowing(Grid->start);
+                            IfSowing(Grid->start); // To transform date format from "MM-DD" to 
 
                             /* If sowing has occurred than determine the emergence */ /* 如果播种已经发生，则确定出苗 */
                             if (Crop->Sowing >= 1 && Crop->Emergence == 0)

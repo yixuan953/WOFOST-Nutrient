@@ -22,8 +22,6 @@ void Output_Daily(FILE *fp_do)
                 Crop->st.Development,
                 Crop->TSumEmergence,
                 WatBal->rt.Transpiration,
-                //Penman.E0 * exp(-0.75 * KDiffuse * Crop->st.LAI),
-                //max(0., Penman.ES0 * exp(-0.75 * KDiffuse * Crop->st.LAI)),
                 WatBal->rt.EvapWater,
                 WatBal->rt.EvapSoil,
                 Crop->N_rt.Demand_lv + Crop->N_rt.Demand_st + Crop->N_rt.Demand_ro,

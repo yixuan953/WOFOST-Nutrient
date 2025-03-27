@@ -27,6 +27,7 @@ extern void header_AO();                            // 生成头信息的函数
 extern int GetSimInput();                        // 获取模拟输入的函数
 extern void GetMeteoInput();                     // 获取气象输入的函数
 extern void IfSowing();                          // 判断是否播种的函数
+extern char* DekadDate(float sowing_float);
 
 /* Additional functions */        /* 额外的函数 */
 extern int Astro();               // 天文算法函数

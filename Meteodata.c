@@ -1,11 +1,10 @@
-
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <netcdf.h>
 #include <math.h>
+#include <float.h>
 #include "wofost.h"
 #include "extern.h"
 
@@ -29,7 +28,6 @@ int GetMeteoData(Weather* meteo)
     int minyear_tmp, maxyear_tmp, minday_tmp, maxday_tmp;
     float ****variable;
     float *data;
-    //float Svap_Tmax, Svap_Tmin, Svap;
     
     // get mask
     // open file
@@ -86,8 +84,8 @@ int GetMeteoData(Weather* meteo)
         }
     }
     
-    // allocate sow_a1
-    if ((retval = nc_inq_varid(ncid, "sow_a1", &varid)))
+    // allocate sowing date
+    if ((retval = nc_inq_varid(ncid, "Sow_date", &varid)))
         ERR(retval);
     sow_a1 = malloc(lon_length * sizeof(*sow_a1));
     if(sow_a1 == NULL){
@@ -118,40 +116,40 @@ int GetMeteoData(Weather* meteo)
     }
     free(data);
 
-    // allocate HA
-    if ((retval = nc_inq_varid(ncid, "HA", &varid)))
-        ERR(retval);
-    HA = malloc(lon_length * sizeof(*HA));
-    if(HA == NULL){
-        fprintf(stderr, "Could not malloc");
-        exit(1); 
-    }
-    for (j = 0; j < lon_length; j++) {
-        HA[j] = malloc(lat_length * sizeof(*HA[j]));
-        if(HA == NULL){
-            fprintf(stderr, "Could not malloc");
-            exit(1); 
-        }
-    }
-    // Fill HA
-    data = malloc(lon_length * lat_length * sizeof(*data));
-    if(data == NULL){
-        fprintf(stderr, "Could not malloc");
-        exit(1); 
-    }
-    fprintf(stdout, "Started loading forcing data for HA\n");
-    if((retval = nc_get_var_float(ncid, varid, data)))
-        ERR(retval);
-    for (k = 0; k < lat_length; k++) {
-        for (j = 0; j < lon_length; j++) {
-            HA[j][k] = data[k * lon_length + j];
-            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, HA[j][k], Latitude[k], Longitude[j]);
-        }
-    }
-    free(data);
+    // // allocate HA
+    // if ((retval = nc_inq_varid(ncid, "HA", &varid)))
+    //     ERR(retval);
+    // HA = malloc(lon_length * sizeof(*HA));
+    // if(HA == NULL){
+    //     fprintf(stderr, "Could not malloc");
+    //     exit(1); 
+    // }
+    // for (j = 0; j < lon_length; j++) {
+    //     HA[j] = malloc(lat_length * sizeof(*HA[j]));
+    //     if(HA == NULL){
+    //         fprintf(stderr, "Could not malloc");
+    //         exit(1); 
+    //     }
+    // }
+    // // Fill HA
+    // data = malloc(lon_length * lat_length * sizeof(*data));
+    // if(data == NULL){
+    //     fprintf(stderr, "Could not malloc");
+    //     exit(1); 
+    // }
+    // fprintf(stdout, "Started loading forcing data for HA\n");
+    // if((retval = nc_get_var_float(ncid, varid, data)))
+    //     ERR(retval);
+    // for (k = 0; k < lat_length; k++) {
+    //     for (j = 0; j < lon_length; j++) {
+    //         HA[j][k] = data[k * lon_length + j];
+    //         // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, HA[j][k], Latitude[k], Longitude[j]);
+    //     }
+    // }
+    // free(data);
 
     // allocate tsumEA
-    if ((retval = nc_inq_varid(ncid, "tsumEA", &varid)))
+    if ((retval = nc_inq_varid(ncid, "TSUM1", &varid)))
        ERR(retval);
     tsumEA = malloc(lon_length * sizeof(*tsumEA));
     if(tsumEA == NULL){
@@ -183,7 +181,7 @@ int GetMeteoData(Weather* meteo)
     free(data);
 
     // allocate tsumAM
-    if ((retval = nc_inq_varid(ncid, "tsumAM", &varid)))
+    if ((retval = nc_inq_varid(ncid, "TSUM2", &varid)))
        ERR(retval);
     tsumAM = malloc(lon_length * sizeof(*tsumAM));
     if(tsumAM == NULL){
@@ -271,14 +269,26 @@ int GetMeteoData(Weather* meteo)
                 maxlon_tmp = Longitude[j];
             }
         }
-        if(minlat_tmp != minlat || minlon_tmp != minlon ||
-           maxlat_tmp != maxlat || maxlon_tmp != maxlon) {
-            fprintf(stderr, "Latitude and/or longitude domain %lf:%lf - %lf:%lf "
-                            "is different from mask domain %lf:%lf - %lf:%lf\n", 
-                    minlat_tmp, maxlat_tmp, minlon_tmp, maxlon_tmp, 
-                    minlat, maxlat, minlon, maxlon);
-            exit(1); 
-        }
+
+        // If they are the same
+        // if(minlat_tmp != minlat || minlon_tmp != minlon ||
+        //    maxlat_tmp != maxlat || maxlon_tmp != maxlon) {
+        //     fprintf(stderr, "Latitude and/or longitude domain %lf:%lf - %lf:%lf "
+        //                     "is different from mask domain %lf:%lf - %lf:%lf\n", 
+        //             minlat_tmp, maxlat_tmp, minlon_tmp, maxlon_tmp, 
+        //             minlat, maxlat, minlon, maxlon);
+        //     exit(1); 
+        // }
+
+        // If meteo mask is larger than crop mask
+        if(minlat_tmp > minlat || minlon_tmp > minlon ||
+            maxlat_tmp < maxlat || maxlon_tmp < maxlon) {
+             fprintf(stderr, "Latitude and/or longitude domain %lf:%lf - %lf:%lf "
+                             "is smaller than mask domain %lf:%lf - %lf:%lf\n", 
+                     minlat_tmp, maxlat_tmp, minlon_tmp, maxlon_tmp, 
+                     minlat, maxlat, minlon, maxlon);
+             exit(1); 
+         }
         
         // get time
         if ((retval = nc_inq_dimid(ncid, "time", &time_dimid)))
@@ -371,12 +381,13 @@ int GetMeteoData(Weather* meteo)
             ERR(retval);
         for (k = 0; k < lat_length; k++) {
             for (j = 0; j < lon_length; j++) {
-                if (HA[j][k] > 0) {
+                if (!isnan(sow_a1[j][k])) {
                     for (l = 0; l < time_length; l++) {
                         (*variable)[j][k][l] = 
                                 data[l * lon_length * lat_length + k * lon_length + j];
                     }
-                } else {
+                } 
+                else {
                     for (l = 0; l < time_length; l++) {
                         (*variable)[j][k][l] = -99;
                     }
@@ -407,7 +418,7 @@ int GetMeteoData(Weather* meteo)
             exit(1); 
         }
         for (k = 0; k < lat_length; k++) {
-            if (HA[j][k] > 0) {
+            if (!isnan(sow_a1[j][k])) {
                 AngstA[j][k] = 0.4885 - 0.0052 * Latitude[k];
                 AngstB[j][k] =  0.1563 + 0.0074 * Longitude[k];
                 // TODO: temporary needs to be fixed
@@ -424,7 +435,7 @@ int GetMeteoData(Weather* meteo)
     // adjust data
     for (j = 0; j < lon_length; j++) {
         for (k = 0; k < lat_length; k++) {
-            if (HA[j][k] > 0) {
+            if (!isnan(sow_a1[j][k])) {
             for (l = 0; l < time_length; l++) {
                 Tmin[j][k][l] = roundz(Tmin[j][k][l], 1); // [degree C]
                 Tmax[j][k][l] = roundz(Tmax[j][k][l], 1); // [degree C]

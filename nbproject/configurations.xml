@@ -10,6 +10,7 @@
       <in>CropNutrientRates.c</in>
       <in>Cropdata.c</in>
       <in>DM-Partioning.c</in>
+      <in>DateTrans.c</in>
       <in>Develop.c</in>
       <in>Evtra.c</in>
       <in>Fillvar.c</in>
@@ -111,6 +112,10 @@
         </cTool>
       </item>
       <item path="DM-Partioning.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="0">
+        </cTool>
+      </item>
+            <item path="DateTrans.c" ex="false" tool="0" flavor2="3">
         <cTool flags="0">
         </cTool>
       </item>
