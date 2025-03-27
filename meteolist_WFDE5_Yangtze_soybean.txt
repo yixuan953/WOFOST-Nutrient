@@ -1,7 +1,0 @@
-/lustre/nobackup/WUR/ESG/zhou111/Data/Climate_Forcing/WFDE5/Yangtze/ 1985 2019 32 /lustre/nobackup/WUR/ESG/zhou111/Model_Results/1_Yp_WOFOST/Yangtze/soybean_Yp_his.nc
-Yangtze_Tmin_daily_1990-2019.nc  TMIN tasmin
-Yangtze_Tmax_daily_1990-2019.nc  TMAX tasmax
-Yangtze_SWdown_daily_1990-2019.nc  RADIATION SWdown
-Yangtze_Prec_daily_1990-2019.nc  RAIN Prec
-Yangtze_Wind_daily_1990-2019.nc  WINDSPEED Wind
-Yangtze_Vap_daily_1990-2019.nc  VAPOUR Vapour

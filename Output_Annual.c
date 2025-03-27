@@ -19,7 +19,7 @@ void Output_Annual(FILE *fp_ao)
                Longitude[Lon],
                MeteoYear[Day],
                MeteoDay[Day],
-               Crop->st.storage, // Crop yield
+               Crop->st.storage, // Crop yield = Grid->twso[Crop->GrowthDay]
                Crop->GrowthDay,
                Crop->N_st.Uptake,
                Crop->P_st.Uptake,

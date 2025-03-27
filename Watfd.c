@@ -212,7 +212,7 @@ void IntegrationWatBal()
                 (Crop->st.RootDepth - Crop->st.RootDepth_prev) / 
                 (Crop->prm.MaxRootingDepth - Crop->st.RootDepth_prev);
         
-        WaterRootExt = min( WaterRootExt,WatBal->st.MoistureLOW);
+        WaterRootExt = min(WaterRootExt,WatBal->st.MoistureLOW);
                 
         WatBal->st.MoistureLOW -= WaterRootExt;
 
