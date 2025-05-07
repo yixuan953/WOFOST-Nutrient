@@ -429,6 +429,8 @@ enum{
     WEATHER_RAIN,
     WEATHER_WINDSPEED,
     WEATHER_VAPOUR,
+    WEATHER_NDEP,
+    WEATHER_PDEP,
     WEATHER_NTYPES
 };
 
@@ -454,10 +456,10 @@ int MeteoDay[METEO_LENGTH];
 float CO2;
 double Longitude[DOMAIN_LENGTH], Latitude[DOMAIN_LENGTH];
 // --- I added these variables to the original crop mask.nc file ----
-float **sow_a1; // Average sowing date: This will replace the sowing date
+float **Sow_date; // Average sowing date: This will replace the sowing date
 // float **HA; // Harvest area
-float **tsumEA; // TSUM1
-float **tsumAM; // TSUM2
+float **TSUM1; // TSUM1
+float **TSUM2; // TSUM2
 // --------------------------------------------------------------------
 float **Altitude;
 float **AngstA;
@@ -468,6 +470,10 @@ float ***Radiation;
 float ***Rain;
 float ***Windspeed;
 float ***Vapour;
+// --- I added these variables as "Meteo" input ----
+float ***N_total_dep;
+float ***P_total_dep;
+// --- I added these variables as "Meteo" input ----
 
 /* Time step */
 float Step;

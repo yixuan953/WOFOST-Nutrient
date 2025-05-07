@@ -87,6 +87,10 @@ void GetMeteoInput(char *meteolist)
                 type = WEATHER_WINDSPEED;
             } else if (strcmp(filetype, "VAPOUR") == 0) {
                 type = WEATHER_VAPOUR;
+            } else if (strcmp(filetype, "NDEP") == 0) {
+                type = WEATHER_NDEP;
+            } else if (strcmp(filetype, "PDEP") == 0) {
+                type = WEATHER_PDEP;
             } else {
                 fprintf(stderr, "Unknown meteo type %s\n", filetype);
                 exit(1);

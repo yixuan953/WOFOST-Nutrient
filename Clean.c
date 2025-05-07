@@ -359,6 +359,8 @@ void CleanMeteo(Weather * Meteo)
             free(Rain[j][k]);
             free(Windspeed[j][k]);
             free(Vapour[j][k]);
+            free(N_total_dep[j][k]);
+            free(P_total_dep[j][k]);
         }
         free(Tmin[j]);
         free(Tmax[j]);
@@ -366,14 +368,16 @@ void CleanMeteo(Weather * Meteo)
         free(Rain[j]);
         free(Windspeed[j]);
         free(Vapour[j]);
-        
+        free(N_total_dep[j]);
+        free(P_total_dep[j]);
+
         free(AngstA[j]);
         free(AngstB[j]);
         free(Altitude[j]);
         //free(HA[j]);
-        free(sow_a1[j]);
-        free(tsumEA[j]);
-        free(tsumAM[j]);
+        free(Sow_date[j]);
+        free(TSUM1[j]);
+        free(TSUM2[j]);
     }
     free(Tmin);
     free(Tmax);
@@ -381,12 +385,14 @@ void CleanMeteo(Weather * Meteo)
     free(Rain);
     free(Windspeed);
     free(Vapour);
-        
+    free(N_total_dep);
+    free(P_total_dep);
+
     free(AngstA);
     free(AngstB);
     free(Altitude);
     // free(HA);
-    free(sow_a1);
-    free(tsumEA);
-    free(tsumAM);
+    free(Sow_date);
+    free(TSUM1);
+    free(TSUM2);
 }

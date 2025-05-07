@@ -11,10 +11,10 @@ void header_DO(FILE *fp_do)
 
 void Output_Daily(FILE *fp_do)
 {      
-         fprintf(fp_do,"%7.2f\t%7.2f\t%4d\t%3d" // Lat, Lon, MeteoYear, MeteoDay
-                "\t%4.2f" // Crop stage, Crop tsum
-                "\t%4.2f\t%4.2f\t%4.2f\t%4.2f" // Water demand
-                "\t%4.2f\t%4.2f\n", //N,P demand
+         fprintf(fp_do,"%7.2f,%7.2f,%4d,%3d," // Lat, Lon, MeteoYear, MeteoDay
+                "%4.2f," // Crop stage, Crop tsum
+                "%4.2f,%4.2f,%4.2f,%4.2f," // Water demand
+                "%4.2f,%4.2f\n", //N,P demand
                 Latitude[Lat],
                 Longitude[Lon],
                 MeteoYear[Day],

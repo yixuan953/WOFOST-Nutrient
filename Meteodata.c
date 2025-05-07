@@ -87,31 +87,31 @@ int GetMeteoData(Weather* meteo)
     // allocate sowing date
     if ((retval = nc_inq_varid(ncid, "Sow_date", &varid)))
         ERR(retval);
-    sow_a1 = malloc(lon_length * sizeof(*sow_a1));
-    if(sow_a1 == NULL){
+    Sow_date = malloc(lon_length * sizeof(*Sow_date));
+    if(Sow_date == NULL){
         fprintf(stderr, "Could not malloc");
         exit(1); 
     }
     for (j = 0; j < lon_length; j++) {
-        sow_a1[j] = malloc(lat_length * sizeof(*sow_a1[j]));
-        if(sow_a1 == NULL){
+        Sow_date[j] = malloc(lat_length * sizeof(*Sow_date[j]));
+        if(Sow_date == NULL){
             fprintf(stderr, "Could not malloc");
             exit(1); 
         }
     }
-    // Fill sow_a1
+    // Fill Sow_date
     data = malloc(lon_length * lat_length * sizeof(*data));
     if(data == NULL){
         fprintf(stderr, "Could not malloc");
         exit(1); 
     }
-    fprintf(stdout, "Started loading forcing data for sow_a1\n");
+    fprintf(stdout, "Started loading forcing data for Sow_date\n");
     if((retval = nc_get_var_float(ncid, varid, data)))
         ERR(retval);
     for (k = 0; k < lat_length; k++) {
         for (j = 0; j < lon_length; j++) {
-            sow_a1[j][k] = data[k * lon_length + j];
-            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, sow_a1[j][k], Latitude[k], Longitude[j]);
+            Sow_date[j][k] = data[k * lon_length + j];
+            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, Sow_date[j][k], Latitude[k], Longitude[j]);
         }
     }
     free(data);
@@ -148,66 +148,66 @@ int GetMeteoData(Weather* meteo)
     // }
     // free(data);
 
-    // allocate tsumEA
+    // allocate TSUM1
     if ((retval = nc_inq_varid(ncid, "TSUM1", &varid)))
        ERR(retval);
-    tsumEA = malloc(lon_length * sizeof(*tsumEA));
-    if(tsumEA == NULL){
+    TSUM1 = malloc(lon_length * sizeof(*TSUM1));
+    if(TSUM1 == NULL){
        fprintf(stderr, "Could not malloc");
        exit(1); 
     }
     for (j = 0; j < lon_length; j++) {
-       tsumEA[j] = malloc(lat_length * sizeof(*tsumEA[j]));
-       if(tsumEA == NULL){
+       TSUM1[j] = malloc(lat_length * sizeof(*TSUM1[j]));
+       if(TSUM1 == NULL){
            fprintf(stderr, "Could not malloc");
            exit(1); 
        }
     }
-   // Fill tsumEA
+   // Fill TSUM1
     data = malloc(lon_length * lat_length * sizeof(*data));
     if(data == NULL){
        fprintf(stderr, "Could not malloc");
        exit(1); 
     }
-   fprintf(stdout, "Started loading forcing data for tsumEA\n");
+   fprintf(stdout, "Started loading forcing data for TSUM1\n");
     if((retval = nc_get_var_float(ncid, varid, data)))
        ERR(retval);
     for (k = 0; k < lat_length; k++) {
        for (j = 0; j < lon_length; j++) {
-           tsumEA[j][k] = data[k * lon_length + j];
-           // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, tsumEA[j][k], Latitude[k], Longitude[j]);
+           TSUM1[j][k] = data[k * lon_length + j];
+           // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, TSUM1[j][k], Latitude[k], Longitude[j]);
        }
     }
     free(data);
 
-    // allocate tsumAM
+    // allocate TSUM2
     if ((retval = nc_inq_varid(ncid, "TSUM2", &varid)))
        ERR(retval);
-    tsumAM = malloc(lon_length * sizeof(*tsumAM));
-    if(tsumAM == NULL){
+    TSUM2 = malloc(lon_length * sizeof(*TSUM2));
+    if(TSUM2 == NULL){
        fprintf(stderr, "Could not malloc");
        exit(1); 
     }
     for (j = 0; j < lon_length; j++) {
-    tsumAM[j] = malloc(lat_length * sizeof(*tsumAM[j]));
-       if(tsumAM == NULL){
+    TSUM2[j] = malloc(lat_length * sizeof(*TSUM2[j]));
+       if(TSUM2 == NULL){
            fprintf(stderr, "Could not malloc");
            exit(1); 
        }
     }
-   // Fill tsumEA
+   // Fill TSUM1
    data = malloc(lon_length * lat_length * sizeof(*data));
     if(data == NULL){
        fprintf(stderr, "Could not malloc");
        exit(1); 
     }
-    fprintf(stdout, "Started loading forcing data for tsumAM\n");
+    fprintf(stdout, "Started loading forcing data for TSUM2\n");
     if((retval = nc_get_var_float(ncid, varid, data)))
        ERR(retval);
     for (k = 0; k < lat_length; k++) {
        for (j = 0; j < lon_length; j++) {
-            tsumAM[j][k] = data[k * lon_length + j];
-            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, tsumAM[j][k], Latitude[k], Longitude[j]);
+            TSUM2[j][k] = data[k * lon_length + j];
+            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, TSUM2[j][k], Latitude[k], Longitude[j]);
        }
     }
     free(data);
@@ -349,7 +349,12 @@ int GetMeteoData(Weather* meteo)
             variable = &Windspeed;
         } else if (i == WEATHER_VAPOUR) {
             variable = &Vapour;
+        } else if (i == WEATHER_NDEP) {
+            variable = &N_total_dep;
+        } else if (i == WEATHER_PDEP) {
+            variable = &P_total_dep;
         }
+
         (*variable) = malloc(lon_length * sizeof(*(*variable)));
         if((*variable) == NULL){
             fprintf(stderr, "Could not malloc");
@@ -381,7 +386,7 @@ int GetMeteoData(Weather* meteo)
             ERR(retval);
         for (k = 0; k < lat_length; k++) {
             for (j = 0; j < lon_length; j++) {
-                if (!isnan(sow_a1[j][k])) {
+                if (!isnan(Sow_date[j][k])) {
                     for (l = 0; l < time_length; l++) {
                         (*variable)[j][k][l] = 
                                 data[l * lon_length * lat_length + k * lon_length + j];
@@ -418,7 +423,7 @@ int GetMeteoData(Weather* meteo)
             exit(1); 
         }
         for (k = 0; k < lat_length; k++) {
-            if (!isnan(sow_a1[j][k])) {
+            if (!isnan(Sow_date[j][k])) {
                 AngstA[j][k] = 0.4885 - 0.0052 * Latitude[k];
                 AngstB[j][k] =  0.1563 + 0.0074 * Longitude[k];
                 // TODO: temporary needs to be fixed
@@ -435,14 +440,16 @@ int GetMeteoData(Weather* meteo)
     // adjust data
     for (j = 0; j < lon_length; j++) {
         for (k = 0; k < lat_length; k++) {
-            if (!isnan(sow_a1[j][k])) {
+            if (!isnan(Sow_date[j][k])) {
             for (l = 0; l < time_length; l++) {
                 Tmin[j][k][l] = roundz(Tmin[j][k][l], 1); // [degree C]
                 Tmax[j][k][l] = roundz(Tmax[j][k][l], 1); // [degree C]
                 Radiation[j][k][l]  = 1000 * roundz(Radiation[j][k][l], 1); // from KJ/m2 to J/m2/day
                 Rain[j][k][l] = roundz(Rain[j][k][l], 2); // [mm day-1]
-                Windspeed[j][k][l] = roundz(Windspeed[j][k][l], 1);
+                Windspeed[j][k][l] = roundz(Windspeed[j][k][l], 1); // [m/s]
                 Vapour[j][k][l] = roundz(Vapour[j][k][l], 1); // [kPa]
+                N_total_dep[j][k][l] = roundz(N_total_dep[j][k][l], 1); // [kgN/ha]
+                P_total_dep[j][k][l] = roundz(P_total_dep[j][k][l], 1); // [kgN/ha]
                 }
             }
         }

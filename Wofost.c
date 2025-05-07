@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
 
     // maize-150; wheat-300; rice-180; soybean-140
-    int CycleLength = 180; // 声明一个整型变量CycleLength并初始化为300，可能表示一个周期的长度。
+    int CycleLength = 140; // 声明一个整型变量CycleLength并初始化为300，可能表示一个周期的长度。
     int NumberOfFiles;     // 声明一个整型变量NumberOfFiles，可能用来存储文件的数量。
     int Emergence;         // 声明一个整型变量Emergence，其具体用途不明。
     int i;                 // 声明一个整型变量i，通常用作循环计数。
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
         {
             for (Lat = 0; Lat < Meteo->nlat; Lat++)
             {
-                if (isnan(sow_a1[Lon][Lat])) // Start the simulation if all variables have the value
+                if (isnan(Sow_date[Lon][Lat])) // Start the simulation if all variables have the value
                 {
                     continue;
                 }
@@ -171,10 +171,10 @@ int main(int argc, char **argv)
                  while (Grid)
                  {
                     Grid->flag = 0;
-                    char* sow_date = DekadDate(sow_a1[Lon][Lat]);
-                    //printf("%s %4.2f %s\n", Grid->start, sow_a1[Lon][Lat], sow_date);
+                    char* sow_date = DekadDate(Sow_date[Lon][Lat]);
+                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
                     strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
-                    //printf("%s %4.2f %s\n", Grid->start, sow_a1[Lon][Lat], sow_date);
+                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
                     free(sow_date);
 
                     for (i = 0; i <= Meteo->Seasons; i++)
@@ -205,8 +205,8 @@ int main(int argc, char **argv)
                         /* put them in the place holders */
                         
                         Crop = Grid->crp;
-                        Crop->prm.TempSum1 = tsumEA[Lon][Lat];
-                        Crop->prm.TempSum2 = tsumAM[Lon][Lat];
+                        Crop->prm.TempSum1 = TSUM1[Lon][Lat];
+                        Crop->prm.TempSum2 = TSUM2[Lon][Lat];
                         
                         WatBal = Grid->soil;
                         Mng = Grid->mng;

@@ -37,14 +37,14 @@ void CropNutrientRates()
         Crop->K_rt.storage = min(Crop->K_rt.Demand_so, Crop->K_rt.Supply); 
     }
     
-        /* Total available nutrients for translocation */
+    /* Total available nutrients for translocation */
     Avail_N = Crop->N_st.Avail_lv + Crop->N_st.Avail_st + Crop->N_st.Avail_ro;
     Avail_P = Crop->P_st.Avail_lv + Crop->P_st.Avail_st + Crop->P_st.Avail_ro;
     Avail_K = Crop->K_st.Avail_lv + Crop->K_st.Avail_st + Crop->K_st.Avail_ro;
     
     
     /* Actual N translocation rate partitioned over the organs */ 
-    if ( Avail_N > 0.001)
+    if (Avail_N > 0.001)
     {  
         Crop->N_rt.Transloc_lv = Crop->N_rt.storage * Crop->N_st.Avail_lv / Avail_N;
         Crop->N_rt.Transloc_st = Crop->N_rt.storage * Crop->N_st.Avail_st / Avail_N;
@@ -58,7 +58,7 @@ void CropNutrientRates()
     }
     
     /* Actual P translocation rate partitioned over the organs */ 
-    if ( Avail_P > 0.001)
+    if (Avail_P > 0.001)
     {
         Crop->P_rt.Transloc_lv = Crop->P_rt.storage * Crop->P_st.Avail_lv / Avail_P;
         Crop->P_rt.Transloc_st = Crop->P_rt.storage * Crop->P_st.Avail_st / Avail_P;
@@ -71,8 +71,8 @@ void CropNutrientRates()
         Crop->P_rt.Transloc_ro = 0.;
     }
     
-        /* Actual P translocation rate partitioned over the organs */ 
-    if ( Avail_K > 0.001)
+    /* Actual P translocation rate partitioned over the organs */ 
+    if (Avail_K > 0.001)
     {
         Crop->K_rt.Transloc_lv = Crop->K_rt.storage * Crop->K_st.Avail_lv / Avail_K;
         Crop->K_rt.Transloc_st = Crop->K_rt.storage * Crop->K_st.Avail_st / Avail_K;
