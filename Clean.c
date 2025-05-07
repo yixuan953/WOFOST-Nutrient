@@ -416,3 +416,38 @@ void CleanMeteo(Weather * Meteo)
     free(Al_Fe_ox);
     free(P_Olsen);
 }
+
+// ------ Clean the fertilization file ----
+    void CleanFert(Nutri *Fert)
+{
+    size_t j, k;
+    for (j = 0; j < Meteo->nlon; j++) {
+        for (k = 0; k < Meteo->nlat; k++) {
+            free(EF_NOx[j][k]);
+            free(Res_return_ratio[j][k]);
+            free(Manure_N_appRate[j][k]);
+            free(Manure_P_appRate[j][k]);
+            free(Urea_inorg_N_appRate[j][k]);
+            free(Other_inorg_N_appRate[j][k]);
+            free(Inorg_P_appRate[j][k]);
+        }
+
+        free(EF_NOx[j]);
+        free(Res_return_ratio[j]);
+        free(Manure_N_appRate[j]);
+        free(Manure_P_appRate[j]);
+        free(Urea_inorg_N_appRate[j]);
+        free(Other_inorg_N_appRate[j]);
+        free(Inorg_P_appRate[j]);
+        free(Sow_date[j]);
+    }
+
+    free(EF_NOx);
+    free(Res_return_ratio);
+    free(Manure_N_appRate);
+    free(Manure_P_appRate);
+    free(Urea_inorg_N_appRate);
+    free(Other_inorg_N_appRate);
+    free(Inorg_P_appRate);
+    free(Sow_date);
+}

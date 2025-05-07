@@ -768,9 +768,9 @@ int GetMeteoData(Weather* meteo)
                 Rain[j][k][l] = roundz(Rain[j][k][l], 2); // [mm day-1]
                 Windspeed[j][k][l] = roundz(Windspeed[j][k][l], 1); // [m/s]
                 Vapour[j][k][l] = roundz(Vapour[j][k][l], 1); // [kPa]
-                N_total_dep[j][k][l] = roundz(N_total_dep[j][k][l], 1); // [kgN/ha]
-                P_total_dep[j][k][l] = roundz(P_total_dep[j][k][l], 1); // [kgN/ha]
-                }
+                N_total_dep[j][k][l] = roundz(N_total_dep[j][k][l], 2); // [kgN/ha]
+                P_total_dep[j][k][l] = roundz(P_total_dep[j][k][l], 2); // [kgP/ha]
+                } //roundz: rounding the number to x decimal places
             }
         }
     }

@@ -16,6 +16,7 @@
 #define NUMBER_OF_TABLES        31
 #define MAX_STRING             2048
 #define METEO_LENGTH           36600 //max 100 years 
+#define FERT_LENGTH            100 //max 100 years 
 #define DOMAIN_LENGTH          15000   //max 0.5 degree
 
 struct tm current_date;
@@ -453,6 +454,7 @@ Weather *Meteo; /* Place holder for the meteo filenames and lat/lon */
 int Station, Year;
 int MeteoYear[METEO_LENGTH];
 int MeteoDay[METEO_LENGTH];
+int FertYear[FERT_LENGTH];
 float CO2;
 double Longitude[DOMAIN_LENGTH], Latitude[DOMAIN_LENGTH];
 // --- I added these variables to the original crop mask.nc file ----
@@ -487,5 +489,41 @@ float ***P_total_dep;
 
 /* Time step */
 float Step;
-             
+
+// ------- HERE I created a new data structure to input fertilizatin -----
+enum{
+        FERT_RESRATIO,
+        FERT_N_MANURE,
+        FERT_P_MANURE,
+        FERT_N_UREA,
+        FERT_N_OTHERINOG,
+        FERT_P_INORG,
+        FERT_EFNOX,
+        FERT_NTYPES
+    };
+
+
+typedef struct FERT {
+        char mask[MAX_STRING];
+        char file[FERT_NTYPES][MAX_STRING];
+        char type[FERT_NTYPES][MAX_STRING];
+        char var[FERT_NTYPES][MAX_STRING];
+        int StartYear;
+        int EndYear;
+        int Seasons;
+        size_t nlat;
+        size_t nlon;
+        size_t ntime;
+        struct FERT *next;
+        } Nutri;
+Nutri *Fert; /* The name of the structure FERT*/
+
+float ***EF_NOx; // Emission factor of NOX [-]
+float ***Manure_N_appRate; // [kg/ha]
+float ***Urea_inorg_N_appRate; // [kg/ha]
+float ***Other_inorg_N_appRate; // [kg/ha]
+float ***Manure_P_appRate; // [kg/ha]
+float ***Inorg_P_appRate; // [kg/ha]
+float ***Res_return_ratio; // [-]
+
 #endif	// 
