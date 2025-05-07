@@ -378,6 +378,16 @@ void CleanMeteo(Weather * Meteo)
         free(Sow_date[j]);
         free(TSUM1[j]);
         free(TSUM2[j]);
+        free(SOC[j]);
+        free(bulk_density[j]);
+        free(clay_content[j]);
+        free(texture_class[j]);
+        free(slope[j]);
+        free(Climate_Zone[j]);
+        free(NC_ratio[j]);
+        free(PC_ratio[j]);
+        free(Al_Fe_ox[j]);
+        free(P_Olsen[j]);
     }
     free(Tmin);
     free(Tmax);
@@ -395,4 +405,14 @@ void CleanMeteo(Weather * Meteo)
     free(Sow_date);
     free(TSUM1);
     free(TSUM2);
+    free(SOC);
+    free(bulk_density);
+    free(clay_content);
+    free(texture_class);
+    free(slope);
+    free(Climate_Zone);
+    free(NC_ratio);
+    free(PC_ratio);
+    free(Al_Fe_ox);
+    free(P_Olsen);
 }

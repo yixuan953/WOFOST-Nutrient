@@ -456,10 +456,20 @@ int MeteoDay[METEO_LENGTH];
 float CO2;
 double Longitude[DOMAIN_LENGTH], Latitude[DOMAIN_LENGTH];
 // --- I added these variables to the original crop mask.nc file ----
-float **Sow_date; // Average sowing date: This will replace the sowing date
 // float **HA; // Harvest area
+float **Sow_date; // Average sowing date: This will replace the sowing date
 float **TSUM1; // TSUM1
 float **TSUM2; // TSUM2
+float **SOC; // soil organic carbon, percent weight [%]
+float **bulk_density; // Top soil bulk density [kg/dm3]
+float **clay_content; // percent [%]
+float **texture_class;
+float **slope; //[-]
+float **Climate_Zone; // To calculate the EF_N2O 
+float **NC_ratio; // [-]
+float **PC_ratio; //[-]
+float **Al_Fe_ox; //[mmol/kg]
+float **P_Olsen; //[mmol/kg]
 // --------------------------------------------------------------------
 float **Altitude;
 float **AngstA;
@@ -473,7 +483,7 @@ float ***Vapour;
 // --- I added these variables as "Meteo" input ----
 float ***N_total_dep;
 float ***P_total_dep;
-// --- I added these variables as "Meteo" input ----
+// --- ---------------------------------------- ----
 
 /* Time step */
 float Step;

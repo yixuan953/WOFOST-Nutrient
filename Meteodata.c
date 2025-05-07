@@ -195,7 +195,7 @@ int GetMeteoData(Weather* meteo)
            exit(1); 
        }
     }
-   // Fill TSUM1
+   // Fill TSUM2
    data = malloc(lon_length * lat_length * sizeof(*data));
     if(data == NULL){
        fprintf(stderr, "Could not malloc");
@@ -212,6 +212,326 @@ int GetMeteoData(Weather* meteo)
     }
     free(data);
 
+    // allocate SOC
+    if ((retval = nc_inq_varid(ncid, "SOC", &varid)))
+       ERR(retval);
+    SOC = malloc(lon_length * sizeof(*SOC));
+    if(SOC == NULL){
+       fprintf(stderr, "Could not malloc");
+       exit(1); 
+    }
+    for (j = 0; j < lon_length; j++) {
+    SOC[j] = malloc(lat_length * sizeof(*SOC[j]));
+       if(SOC == NULL){
+           fprintf(stderr, "Could not malloc");
+           exit(1); 
+       }
+    }
+   // Fill SOC
+   data = malloc(lon_length * lat_length * sizeof(*data));
+    if(data == NULL){
+       fprintf(stderr, "Could not malloc");
+       exit(1); 
+    }
+    fprintf(stdout, "Started loading forcing data for SOC\n");
+    if((retval = nc_get_var_float(ncid, varid, data)))
+       ERR(retval);
+    for (k = 0; k < lat_length; k++) {
+       for (j = 0; j < lon_length; j++) {
+            SOC[j][k] = data[k * lon_length + j];
+            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, SOC[j][k], Latitude[k], Longitude[j]);
+       }
+    }
+    free(data);
+
+    // allocate bulk_density
+    if ((retval = nc_inq_varid(ncid, "bulk_density", &varid)))
+        ERR(retval);
+    bulk_density = malloc(lon_length * sizeof(*bulk_density));
+    if(bulk_density == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    bulk_density[j] = malloc(lat_length * sizeof(*bulk_density[j]));
+        if(bulk_density == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill bulk_density
+    data = malloc(lon_length * lat_length * sizeof(*data));
+     if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+     fprintf(stdout, "Started loading forcing data for bulk_density\n");
+     if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+     for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             bulk_density[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, bulk_density[j][k], Latitude[k], Longitude[j]);
+        }
+     }
+     free(data);
+ 
+    // allocate NC_ratio
+    if ((retval = nc_inq_varid(ncid, "NC_ratio", &varid)))
+        ERR(retval);
+    NC_ratio = malloc(lon_length * sizeof(*NC_ratio));
+    if(NC_ratio == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    NC_ratio[j] = malloc(lat_length * sizeof(*NC_ratio[j]));
+        if(NC_ratio == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill NC_ratio
+    data = malloc(lon_length * lat_length * sizeof(*data));
+     if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+     fprintf(stdout, "Started loading forcing data for NC_ratio\n");
+     if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+     for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             NC_ratio[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, NC_ratio[j][k], Latitude[k], Longitude[j]);
+        }
+     }
+     free(data);    
+
+    // allocate PC_ratio
+    if ((retval = nc_inq_varid(ncid, "PC_ratio", &varid)))
+        ERR(retval);
+    PC_ratio = malloc(lon_length * sizeof(*PC_ratio));
+    if(PC_ratio == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    PC_ratio[j] = malloc(lat_length * sizeof(*PC_ratio[j]));
+        if(PC_ratio == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill PC_ratio
+    data = malloc(lon_length * lat_length * sizeof(*data));
+     if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+     fprintf(stdout, "Started loading forcing data for PC_ratio\n");
+     if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+     for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             PC_ratio[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, PC_ratio[j][k], Latitude[k], Longitude[j]);
+        }
+     }
+     free(data);
+
+    // allocate slope
+    if ((retval = nc_inq_varid(ncid, "slope", &varid)))
+        ERR(retval);
+    slope = malloc(lon_length * sizeof(*slope));
+    if(slope == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    slope[j] = malloc(lat_length * sizeof(*slope[j]));
+        if(slope == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill slope
+    data = malloc(lon_length * lat_length * sizeof(*data));
+     if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+     fprintf(stdout, "Started loading forcing data for slope\n");
+     if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+     for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             slope[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, slope[j][k], Latitude[k], Longitude[j]);
+        }
+     }
+    free(data);
+
+    // allocate texture_class
+    if ((retval = nc_inq_varid(ncid, "texture_class", &varid)))
+        ERR(retval);
+    texture_class = malloc(lon_length * sizeof(*texture_class));
+    if(texture_class == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    texture_class[j] = malloc(lat_length * sizeof(*texture_class[j]));
+        if(texture_class == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill texture_class
+    data = malloc(lon_length * lat_length * sizeof(*data));
+     if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+     fprintf(stdout, "Started loading forcing data for texture_class\n");
+     if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+     for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             texture_class[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, texture_class[j][k], Latitude[k], Longitude[j]);
+        }
+     }
+    free(data);
+
+    // allocate clay_content
+    if ((retval = nc_inq_varid(ncid, "clay_content", &varid)))
+        ERR(retval);
+    clay_content = malloc(lon_length * sizeof(*clay_content));
+    if(clay_content == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    clay_content[j] = malloc(lat_length * sizeof(*clay_content[j]));
+        if(clay_content == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill clay_content
+    data = malloc(lon_length * lat_length * sizeof(*data));
+     if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+     fprintf(stdout, "Started loading forcing data for clay_content\n");
+     if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+     for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             clay_content[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, clay_content[j][k], Latitude[k], Longitude[j]);
+        }
+     }
+    free(data);
+
+    // allocate Al_Fe_ox
+    if ((retval = nc_inq_varid(ncid, "Al_Fe_ox", &varid)))
+        ERR(retval);
+    Al_Fe_ox = malloc(lon_length * sizeof(*Al_Fe_ox));
+    if(Al_Fe_ox == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    Al_Fe_ox[j] = malloc(lat_length * sizeof(*Al_Fe_ox[j]));
+        if(Al_Fe_ox == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill Al_Fe_ox
+    data = malloc(lon_length * lat_length * sizeof(*data));
+     if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+     fprintf(stdout, "Started loading forcing data for Al_Fe_ox\n");
+     if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+     for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             Al_Fe_ox[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, Al_Fe_ox[j][k], Latitude[k], Longitude[j]);
+        }
+     }
+    free(data);
+
+    // allocate P_Olsen
+    if ((retval = nc_inq_varid(ncid, "P_Olsen", &varid)))
+        ERR(retval);
+    P_Olsen = malloc(lon_length * sizeof(*P_Olsen));
+    if(P_Olsen == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    P_Olsen[j] = malloc(lat_length * sizeof(*P_Olsen[j]));
+        if(P_Olsen == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill P_Olsen
+    data = malloc(lon_length * lat_length * sizeof(*data));
+     if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+     fprintf(stdout, "Started loading forcing data for P_Olsen\n");
+     if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+     for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             P_Olsen[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, P_Olsen[j][k], Latitude[k], Longitude[j]);
+        }
+     }
+    free(data);
+
+    // allocate Climate_Zone
+    if ((retval = nc_inq_varid(ncid, "Climate_Zone", &varid)))
+        ERR(retval);
+    Climate_Zone = malloc(lon_length * sizeof(*Climate_Zone));
+    if(Climate_Zone == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    for (j = 0; j < lon_length; j++) {
+    Climate_Zone[j] = malloc(lat_length * sizeof(*Climate_Zone[j]));
+        if(Climate_Zone == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+     }
+    // Fill Climate_Zone
+    data = malloc(lon_length * lat_length * sizeof(*data));
+    if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+     }
+    fprintf(stdout, "Started loading forcing data for Climate_Zone\n");
+    if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+    for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+             Climate_Zone[j][k] = data[k * lon_length + j];
+             // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, Climate_Zone[j][k], Latitude[k], Longitude[j]);
+        }
+    }
+    free(data);
+    
     // close file
     if ((retval = nc_close(ncid)))
        ERR(retval);
