@@ -16,4 +16,4 @@
 module load netcdf
 #----------------------------Run WOFOST simulations-----------------------
 # echo "Current directory: $(pwd)"
-./wofost-NP list_Yangtze_mainrice.txt meteolist_WFDE5_Yangtze_mainrice.txt 
+./wofost-NP list_Yangtze_mainrice.txt meteolist_WFDE5_Yangtze_mainrice.txt fertlist_Yangtze_mainrice.txt

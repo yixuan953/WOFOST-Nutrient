@@ -16,7 +16,7 @@ void InitializeNutrients()
     Crop->N_st.Max_ro = Crop->prm.N_MaxRoots * Crop->N_st.Max_lv;
     Crop->N_st.Max_so = 0.;
         
-    /* Initial maximum N concentration in plant organs [kg N ]           */
+    /* Initial maximum N concentration in plant organs [kg N ]   */
     Crop->N_st.leaves = Crop->N_st.Max_lv * Crop->st.leaves;
     Crop->N_st.stems  = Crop->N_st.Max_st * Crop->st.stems;
     Crop->N_st.roots  = Crop->N_st.Max_ro * Crop->st.roots;
@@ -76,7 +76,7 @@ void InitializeNutrients()
     Crop->K_st.Uptake_ro = 0.;
     
     
-     /* Set the soil nutrient states */
+    /* Set the soil nutrient states */
     Site->st_N_tot = List(Mng->N_Fert_table) * Mng->N_Uptake_frac;
     Site->st_P_tot = List(Mng->P_Fert_table) * Mng->P_Uptake_frac;
     Site->st_K_tot = List(Mng->K_Fert_table) * Mng->K_Uptake_frac;

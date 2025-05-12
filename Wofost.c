@@ -18,17 +18,18 @@ int main(int argc, char **argv)
 
     SimUnit *initial = NULL; // 声明一个指向SimUnit类型的指针并初始化为NULL，SimUnit可能是一个用户定义的数据类型。
     Weather *head;           // 声明一个指向Weather类型的指针，可能用于链表的头指针，用来存储天气数据。
+    Nutri *head_nutri;           // 声明一个指向Weather类型的指针，可能用于链表的头指针，用来存储天气数据。
     Green *wipe;             // 声明一个指向Green类型的指针，Green可能是一个用户定义的数据类型。
 
-
     // maize-150; wheat-300; rice-180; soybean-140
-    int CycleLength = 140; // 声明一个整型变量CycleLength并初始化为300，可能表示一个周期的长度。
+    int CycleLength = 180; // 声明一个整型变量CycleLength并初始化为300，可能表示一个周期的长度。
     int NumberOfFiles;     // 声明一个整型变量NumberOfFiles，可能用来存储文件的数量。
     int Emergence;         // 声明一个整型变量Emergence，其具体用途不明。
     int i;                 // 声明一个整型变量i，通常用作循环计数。
 
     char list[MAX_STRING];      // 声明一个字符数组list，大小为MAX_STRING，可能用来存储一个字符串列表。
     char meteolist[MAX_STRING]; // 声明一个字符数组meteolist，大小为MAX_STRING，可能用来存储气象数据的列表。
+    char fertlist[MAX_STRING]; // 声明一个字符数组fertlist，大小为MAX_STRING，可能用来存储施肥数据的列表。
     char name_DO[MAX_STRING];      // 声明一个字符数组name，大小为MAX_STRING
     char name_old_DO[MAX_STRING];  // 声明一个字符数组name_old，大小为MAX_STRING。
     char name_AO[MAX_STRING];      // 声明一个字符数组name，大小为MAX_STRING
@@ -37,20 +38,24 @@ int main(int argc, char **argv)
     Step = 1.; // 将Step变量赋值为1.0，Step的声明没有在这段代码中显示，可能在前面已经声明过。
 
     // 接下来是一系列的判断语句，用来进行错误检查和参数验证。
-    if (argc != 3)
-        exit(0); // 如果命令行参数的数量不等于3，则退出程序。
+    if (argc != 4)
+        exit(0); // 如果命令行参数的数量不等于4，则退出程序。
     if (strlen(argv[1]) >= MAX_STRING)
         exit(0); // 如果第一个命令行参数的长度大于或等于MAX_STRING，则退出程序。
     if (strlen(argv[2]) >= MAX_STRING)
         exit(0); // 同上，对第二个命令行参数进行检查。for protection
+    if (strlen(argv[3]) >= MAX_STRING)
+        exit(0); // 同上，对第三个命令行参数进行检查。for protection
 
     // 将list和meteolist两个数组的内容设置为全0，通常是为了清空这些数组或初始化为默认状态。
     memset(list, '\0', MAX_STRING);
     memset(meteolist, '\0', MAX_STRING); // empty the memory string
+    memset(fertlist, '\0', MAX_STRING); // empty the memory string
 
     // 使用strncpy函数将命令行参数复制到list和meteolist数组中，只复制到各自字符串的长度。
     strncpy(list, argv[1], strlen(argv[1]));
     strncpy(meteolist, argv[2], strlen(argv[2]));
+    strncpy(fertlist, argv[3], strlen(argv[3]));
 
     /* Fill the crop, soil, site and management place holders*/ /* 填充作物、土壤、地点和管理信息的占位符 */
     NumberOfFiles = GetSimInput(list);
@@ -60,6 +65,7 @@ int main(int argc, char **argv)
 
     /* Get the meteo filenames and put them in the placeholder */ /* 获取气象文件的名称，并放入占位符中 */
     GetMeteoInput(meteolist);
+    GetFertInput(fertlist);
 
     /* Allocate memory for the file pointers */      /* 为文件指针分配内存 */
     files_DO = malloc(sizeof(**files_DO) * NumberOfFiles); // 分配足够存储NumberOfFiles个FILE指针的内存
@@ -144,6 +150,48 @@ int main(int argc, char **argv)
 
     /* Go back to the beginning of the list */ /* 返回到列表的开始 */
     Grid = initial;
+    
+    // Add reading fertilization data
+    while(Fert)
+    {
+        /* Get the meteodata */ /* 获取气象数据 */
+        if (GetFertData(Fert) != 1)
+        {
+            fprintf(stderr, "Cannot get fertilization data.\n");
+            exit(0);
+        }
+        printf("running %d - %d\n", Fert->StartYear, Fert->EndYear);
+
+        for (Lon = 0; Lon < Fert->nlon; Lon++)
+        {
+            for (Lat = 0; Lat < Fert->nlat; Lat++)
+            {
+                if (isnan(Sow_date[Lon][Lat])) 
+                {
+                    continue;
+                }
+
+                // Go back to the beginning of the list and rest grid value flag,and twso and length
+                 Grid = initial;
+              
+                 while (Grid)
+                 {
+                    Grid->flag = 0;
+                    char* sow_date = DekadDate(Sow_date[Lon][Lat]);
+                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
+                    strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
+                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
+                    free(sow_date);
+
+                    for (i = 0; i <= Fert->Seasons; i++)
+                    {
+                        Site->st_N_tot = Urea_inorg_N_appRate[Lon][Lat][i] + Other_inorg_N_appRate[Lon][Lat][i];
+                    }
+                    Grid = Grid->next;
+                 } 
+            }      
+        }
+    }
 
     while (Meteo)
     {
@@ -165,7 +213,6 @@ int main(int argc, char **argv)
                 }
 
                 // Go back to the beginning of the list and rest grid value flag,and twso and length
-                // 返回到列表的开始并重置Grid的标志、twso和length
                  Grid = initial;
               
                  while (Grid)
@@ -220,7 +267,8 @@ int main(int argc, char **argv)
                         /* Only simulate between start and end year */ 
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
-                                           
+                            
+                            
                             /* Determine if the sowing already has occurred */
                             IfSowing(Grid->start); // To transform date format from "MM-DD" to 
 

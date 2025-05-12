@@ -621,6 +621,7 @@ int GetMeteoData(Weather* meteo)
             exit(1); 
         }
         meteo->ntime = time_length;
+        
         // TODO: load time based on actual netcdf values
         for (l = 0; l < time_length; l++) {
             if (l == 0) {

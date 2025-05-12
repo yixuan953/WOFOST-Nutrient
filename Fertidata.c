@@ -84,9 +84,45 @@ int GetFertData(Nutri* Fert)
         }
     }
 
+    // allocate sowing date
+    if ((retval = nc_inq_varid(ncid, "Sow_date", &varid)))
+        ERR(retval);
+    Sow_date = malloc(lon_length * sizeof(*Sow_date));
+    if(Sow_date == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    for (j = 0; j < lon_length; j++) {
+        Sow_date[j] = malloc(lat_length * sizeof(*Sow_date[j]));
+        if(Sow_date == NULL){
+            fprintf(stderr, "Could not malloc");
+            exit(1); 
+        }
+    }
+    // Fill Sow_date
+    data = malloc(lon_length * lat_length * sizeof(*data));
+    if(data == NULL){
+        fprintf(stderr, "Could not malloc");
+        exit(1); 
+    }
+    fprintf(stdout, "Started loading forcing data for Sow_date\n");
+    if((retval = nc_get_var_float(ncid, varid, data)))
+        ERR(retval);
+    for (k = 0; k < lat_length; k++) {
+        for (j = 0; j < lon_length; j++) {
+            Sow_date[j][k] = data[k * lon_length + j];
+            // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, Sow_date[j][k], Latitude[k], Longitude[j]);
+        }
+    }
+    free(data);
+
     // close file
     if ((retval = nc_close(ncid)))
        ERR(retval);
+
+    // Here we only read the Sow_date from the mask file
+    // 1. Fertilization date is related to sowing date
+    // 2. If the crop is planted (no sowing date), then fertilization won't be applied
 
 // ------- Read the fertilization data --------
     for (i = 0; i < FERT_NTYPES; i++) {
@@ -143,41 +179,7 @@ int GetFertData(Nutri* Fert)
             }
         }
 
-        // allocate sowing date
-        // Here we only read the Sow_date from the mask file
-        // 1. Fertilization date is related to sowing date
-        // 2. If the crop is planted (no sowing date), then fertilization won't be applied
 
-        if ((retval = nc_inq_varid(ncid, "Sow_date", &varid)))
-            ERR(retval);
-        Sow_date = malloc(lon_length * sizeof(*Sow_date));
-        if(Sow_date == NULL){
-            fprintf(stderr, "Could not malloc");
-            exit(1); 
-        }
-        for (j = 0; j < lon_length; j++) {
-            Sow_date[j] = malloc(lat_length * sizeof(*Sow_date[j]));
-            if(Sow_date == NULL){
-                fprintf(stderr, "Could not malloc");
-                exit(1); 
-            }
-        }
-        // Fill Sow_date
-        data = malloc(lon_length * lat_length * sizeof(*data));
-        if(data == NULL){
-            fprintf(stderr, "Could not malloc");
-            exit(1); 
-        }
-        fprintf(stdout, "Started loading forcing data for Sow_date\n");
-        if((retval = nc_get_var_float(ncid, varid, data)))
-            ERR(retval);
-        for (k = 0; k < lat_length; k++) {
-            for (j = 0; j < lon_length; j++) {
-                Sow_date[j][k] = data[k * lon_length + j];
-                // printf("%3d %3d %5.2f %5.2f %5.2f\n", j, k, Sow_date[j][k], Latitude[k], Longitude[j]);
-            }
-        }
-        free(data);
         
         // If fertilization mask is larger than crop mask
         if(minlat_tmp > minlat || minlon_tmp > minlon ||
@@ -206,7 +208,7 @@ int GetFertData(Nutri* Fert)
             if (l == 0) {
                 FertYear[l] = Fert->StartYear;
             } else {
-                FertYear[l] = FertYear[l - 1];
+                FertYear[l] = Fert->StartYear + l;
             }
         }
         
