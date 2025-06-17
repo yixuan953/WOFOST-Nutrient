@@ -418,7 +418,7 @@ void CleanMeteo(Weather * Meteo)
 }
 
 // ------ Clean the fertilization file ----
-    void CleanFert(Nutri *Fert)
+void CleanFert(Nutri *Fert)
 {
     size_t j, k;
     for (j = 0; j < Meteo->nlon; j++) {
@@ -449,5 +449,22 @@ void CleanMeteo(Weather * Meteo)
     free(Urea_inorg_N_appRate);
     free(Other_inorg_N_appRate);
     free(Inorg_P_appRate);
+    free(Sow_date);
+}
+
+
+// ------ Clean the irrigation file ----
+void CleanIrri(Nutri *Fert)
+{
+    size_t j, k;
+    for (j = 0; j < Meteo->nlon; j++) {
+        for (k = 0; k < Meteo->nlat; k++) {
+            free(Irrigation_Rate[j][k]);
+        }
+        free(Irrigation_Rate[j]);
+        free(Sow_date[j]);
+    }
+
+    free(Irrigation_Rate);
     free(Sow_date);
 }

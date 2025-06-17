@@ -15,7 +15,7 @@
 /* set decimals */
 #define roundz(x,d) ((floor(((x)*pow(10,d))+.5))/pow(10,d))
 
-int GetFertData(Nutri* Fert)
+int GetIrriData(Water_Irri* Irri)
 {
     int i;
     size_t j, k, l;
@@ -31,7 +31,7 @@ int GetFertData(Nutri* Fert)
         
     // get mask
     // open file
-    if ((retval = nc_open(Fert->mask, NC_NOWRITE, &ncid)))
+    if ((retval = nc_open(Irri->mask, NC_NOWRITE, &ncid)))
         ERR(retval);
 
     // get lat & lon
@@ -53,8 +53,8 @@ int GetFertData(Nutri* Fert)
                 lon_length, DOMAIN_LENGTH);
         exit(1); 
     }
-    Fert->nlat = lat_length;
-    Fert->nlon = lon_length;
+    Irri->nlat = lat_length;
+    Irri->nlon = lon_length;
     if ((retval = nc_inq_varid(ncid, "lat", &lat_varid)))
         ERR(retval);
     if ((retval = nc_inq_varid(ncid, "lon", &lon_varid)))
@@ -120,15 +120,13 @@ int GetFertData(Nutri* Fert)
     if ((retval = nc_close(ncid)))
        ERR(retval);
 
-    // Here we only read the Sow_date from the mask file
-    // 1. Fertilization date is related to sowing date
-    // 2. If the crop is planted (no sowing date), then fertilization won't be applied
+    // Here we only read the Sow_date from the mask file as irrigation will only be applied after sowing or shortly before sowing
 
-// ------- Read the fertilization data --------
-    for (i = 0; i < FERT_NTYPES; i++) {
-        printf("%30s\n",Fert->file[i] );
+// ------- Read the irrigation data --------
+    for (i = 0; i < IRRI_NTYPES; i++) {
+        printf("%30s\n",Irri->file[i] );
         // open file
-        if ((retval = nc_open(Fert->file[i], NC_NOWRITE, &ncid)))
+        if ((retval = nc_open(Irri->file[i], NC_NOWRITE, &ncid)))
             ERR(retval);
 
         // get lat & lon
@@ -180,8 +178,7 @@ int GetFertData(Nutri* Fert)
         }
 
 
-        
-        // If fertilization mask is larger than crop mask
+        // If irrigation mask is larger than crop mask
         if(minlat_tmp > minlat || minlon_tmp > minlon ||
             maxlat_tmp < maxlat || maxlon_tmp < maxlon) {
              fprintf(stderr, "Latitude and/or longitude domain %lf:%lf - %lf:%lf "
@@ -192,52 +189,37 @@ int GetFertData(Nutri* Fert)
          }
 
         
-        // get year
-        if ((retval = nc_inq_dimid(ncid, "year", &time_dimid)))
+        // get the time
+        if ((retval = nc_inq_dimid(ncid, "time", &time_dimid)))
             ERR(retval);
         if ((retval = nc_inq_dimlen(ncid, time_dimid, &time_length)))
            ERR(retval); 
-        if (time_length > FERT_LENGTH) {
+        if (time_length > IRRI_LENGTH) {
             fprintf(stderr, "Time %zu is bigger than maximum %d\n", 
-                    time_length, FERT_LENGTH);
+                    time_length, IRRI_LENGTH);
             exit(1); 
         }
-        Fert->ntime = time_length;
+        Irri->ntime = time_length;
 
+        // ----  I changed thi part to get both the month and the year of irrigation data
         for (l = 0; l < time_length; l++) {
-            if (l == 0) {
-                FertYear[l] = Fert->StartYear;
-            } else {
-                FertYear[l] = Fert->StartYear + l;
-            }
+            IrriMonth[l] = (l % 12) + 1;  // Months from 1 to 12
+            IrriYear[l] = Irri->StartYear + (l / 12);  // Year increases every 12 months
         }
-        
         // check year
-        minyear_tmp = FertYear[0];
-        maxyear_tmp = FertYear[time_length - 1];
-        if(!(minyear_tmp <= Fert->StartYear) ||
-           !(maxyear_tmp >= Fert->EndYear)) 
-        {
-            exit(1); 
+        minyear_tmp = IrriYear[0];
+        maxyear_tmp = IrriYear[time_length - 1];
+        if (minyear_tmp != Irri->StartYear || maxyear_tmp != Irri->EndYear) {
+            fprintf(stderr, "Year mismatch: expected [%d - %d], got [%d - %d]\n",
+                    Irri->StartYear, Irri->EndYear, minyear_tmp, maxyear_tmp);
+            exit(1);
         }
        
         // allocate variable
-        if ((retval = nc_inq_varid(ncid, Fert->var[i], &varid)))
+        if ((retval = nc_inq_varid(ncid, Irri->var[i], &varid)))
             ERR(retval);
-        if (i == FERT_RESRATIO) {
-            variable = &Res_return_ratio;
-        } else if (i == FERT_N_MANURE) {
-            variable = &Manure_N_appRate;
-        } else if (i == FERT_P_MANURE) {
-            variable = &Manure_P_appRate;
-        } else if (i == FERT_N_UREA) {
-            variable = &Urea_inorg_N_appRate;
-        } else if (i == FERT_N_OTHERINOG) {
-            variable = &Other_inorg_N_appRate;
-        } else if (i == FERT_P_INORG) {
-            variable = &Inorg_P_appRate;
-        } else if (i == FERT_EFNOX) {
-            variable = &EF_NOx;
+        if (i == IRRI_RATE) {
+            variable = &Irrigation_Rate;
         } 
 
         (*variable) = malloc(lon_length * sizeof(*(*variable)));
@@ -266,7 +248,7 @@ int GetFertData(Nutri* Fert)
             fprintf(stderr, "Could not malloc");
             exit(1); 
         }
-        fprintf(stdout, "Started loading forcing data for %s\n", Fert->type[i]);
+        fprintf(stdout, "Started loading forcing data for %s\n", Irri->type[i]);
         if((retval = nc_get_var_float(ncid, varid, data)))
             ERR(retval);
         for (k = 0; k < lat_length; k++) {
@@ -297,22 +279,12 @@ int GetFertData(Nutri* Fert)
         for (k = 0; k < lat_length; k++) {
             if (!isnan(Sow_date[j][k])) {
                 for (l = 0; l < time_length; l++) {
-                    EF_NOx[j][k][l] = roundz(EF_NOx[j][k][l], 1); // [-]
-                    Res_return_ratio[j][k][l] = roundz(Res_return_ratio[j][k][l], 1); // [-]
-                    Manure_N_appRate[j][k][l] = roundz(Manure_N_appRate[j][k][l], 1); // [kg/ha]
-                    Manure_P_appRate[j][k][l] = roundz(Manure_P_appRate[j][k][l], 1); // [kg/ha]
-                    Urea_inorg_N_appRate[j][k][l] = roundz(Urea_inorg_N_appRate[j][k][l], 1); // [kg/ha]
-                    Other_inorg_N_appRate[j][k][l] = roundz(Other_inorg_N_appRate[j][k][l], 1); // [kg/ha]
-                    Inorg_P_appRate[j][k][l] = roundz(Inorg_P_appRate[j][k][l], 1); // [kg/ha]
-
-                    // Check if the fertilization data is written correctly
-                    // printf("%3d %3d %3d %5.2f %5.2f %5.2f\n", j, k, l, Urea_inorg_N_appRate[j][k][l], Latitude[k], Longitude[j]);
+                    Irrigation_Rate[j][k][l] = roundz(Irrigation_Rate[j][k][l], 1); // [mm]
+                    // Check if the irrigation data is written correctly
+                    printf("%3d %3d %3d %3d %5.2f %5.2f %5.2f\n", j, k, IrriYear[l], IrriMonth[l], Irrigation_Rate[j][k][l], Latitude[k], Longitude[j]);
                     }
             }
         }
     }
-
-
-
     return 1;
 }

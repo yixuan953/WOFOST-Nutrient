@@ -26,7 +26,8 @@ extern void header_DO();                            // 生成头信息的函数
 extern void header_AO();                            // 生成头信息的函数
 extern int GetSimInput();                        // 获取模拟输入的函数
 extern void GetMeteoInput();                     // 获取气象输入的函数
-extern void GetFertInput();                     // 获取气象输入的函数
+extern void GetFertInput();                     // 获取肥料输入的函数
+extern void GetIrriInput();                     // 获取灌溉输入的函数
 extern void IfSowing();                          // 判断是否播种的函数
 extern char* DekadDate(float sowing_float);
 
@@ -37,6 +38,7 @@ extern void CalcPenmanMonteith(); // Penman-Monteith蒸发方程计算函数
 extern void Clean();              // 清理函数
 extern void CleanMeteo();         // 清理气象数据的函数
 extern void CleanFert();          // 清理施肥数据的函数
+extern void CleanIrri();          // 清理施肥数据的函数
 extern void Moment();             // 时刻函数
 
 /* Crop growth */                           /* 作物生长 */

@@ -17,6 +17,7 @@
 #define MAX_STRING             2048
 #define METEO_LENGTH           36600 //max 100 years 
 #define FERT_LENGTH            100 //max 100 years 
+#define IRRI_LENGTH            1200 //max 100 years 
 #define DOMAIN_LENGTH          15000   //max 0.5 degree
 
 struct tm current_date;
@@ -455,8 +456,11 @@ int Station, Year;
 int MeteoYear[METEO_LENGTH];
 int MeteoDay[METEO_LENGTH];
 int FertYear[FERT_LENGTH];
+int IrriYear[FERT_LENGTH];
+int IrriMonth[IRRI_LENGTH];
 float CO2;
 double Longitude[DOMAIN_LENGTH], Latitude[DOMAIN_LENGTH];
+
 // --- I added these variables to the original crop mask.nc file ----
 // float **HA; // Harvest area
 float **Sow_date; // Average sowing date: This will replace the sowing date
@@ -489,6 +493,7 @@ float ***P_total_dep;
 
 /* Time step */
 float Step;
+
 
 // ------- HERE I created a new data structure to input fertilizatin -----
 enum{
@@ -525,5 +530,29 @@ float ***Other_inorg_N_appRate; // [kg/ha]
 float ***Manure_P_appRate; // [kg/ha]
 float ***Inorg_P_appRate; // [kg/ha]
 float ***Res_return_ratio; // [-]
+
+// ------- HERE I created a new data structure to input irrigation -----
+enum{
+        IRRI_RATE,
+        IRRI_NTYPES
+    };
+
+
+typedef struct IRRIWATER {
+        char mask[MAX_STRING];
+        char file[IRRI_NTYPES][MAX_STRING];
+        char type[IRRI_NTYPES][MAX_STRING];
+        char var[IRRI_NTYPES][MAX_STRING];
+        int StartYear;
+        int EndYear;
+        int Seasons;
+        size_t nlat;
+        size_t nlon;
+        size_t ntime;
+        struct IRRIWATER *next;
+        } Water_Irri;
+Water_Irri *Irri; /* The name of the structure IRRIWATER*/
+
+float ***Irrigation_Rate; //  [-]
 
 #endif	// 
