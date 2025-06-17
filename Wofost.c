@@ -40,16 +40,16 @@ int main(int argc, char **argv)
     Step = 1.; // 将Step变量赋值为1.0，Step的声明没有在这段代码中显示，可能在前面已经声明过。
 
     // 接下来是一系列的判断语句，用来进行错误检查和参数验证。
-    if (argc != 4)
-        exit(0); // 如果命令行参数的数量不等于4，则退出程序。
+    if (argc!=5)
+        exit(0); // 如果命令行参数的数量不等于5，则退出程序。
     if (strlen(argv[1]) >= MAX_STRING)
         exit(0); // 如果第一个命令行参数的长度大于或等于MAX_STRING，则退出程序。
     if (strlen(argv[2]) >= MAX_STRING)
-        exit(0); // 同上，对第二个命令行参数进行检查。for protection
+        exit(0); // 同上，for protection
     if (strlen(argv[3]) >= MAX_STRING)
-        exit(0); // 同上，对第三个命令行参数进行检查。for protection
+        exit(0); // 同上
     if (strlen(argv[4]) >= MAX_STRING)
-        exit(0); // 同上，对第三个命令行参数进行检查。for protection
+        exit(0); // 同上
 
     // 将list和meteolist两个数组的内容设置为全0，通常是为了清空这些数组或初始化为默认状态。
     memset(list, '\0', MAX_STRING);

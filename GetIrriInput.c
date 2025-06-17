@@ -75,7 +75,7 @@ void GetIrriInput(char *irrilist)
                     
             if (strlen(filename) >= MAX_STRING) exit(0);
 
-            if (strcmp(filetype,"IRRI_RATE") == 0) {type = IRRI_RATE;} 
+            if (strcmp(filetype,"IRRIRATE") == 0) {type = IRRI_RATE;} 
             else{
                 fprintf(stderr, "Unknown irrigation info %s\n", filetype);
                 exit(1);
