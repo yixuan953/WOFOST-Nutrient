@@ -8,7 +8,7 @@
      
 float List(TABLE_D *Table)
 {
-     while (Table) 
+    while (Table) 
     { 
         if (current_date.tm_mon == Table->month -1 &&
             current_date.tm_mday == Table->day && 

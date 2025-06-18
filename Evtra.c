@@ -43,7 +43,7 @@ void EvapTra() {
     float CriticalSoilMoisture;
     float KDiffuse;
     float MaxReductionOxygenStress;
-    float MoistureStress;
+    //float MoistureStress;
     float OxygenStress;
     float SoilMoistureAeration;
     float SoilWatDepletion;
@@ -63,7 +63,7 @@ void EvapTra() {
             (WatBal->ct.MoistureFC - WatBal->ct.MoistureWP) + WatBal->ct.MoistureWP;
     
     /* Transpiration reduction in case of water shortage */
-    MoistureStress = limit(0.,1.,(WatBal->st.Moisture - WatBal->ct.MoistureWP)/
+    WatBal->MoistureStress = limit(0.,1.,(WatBal->st.Moisture - WatBal->ct.MoistureWP)/
             (CriticalSoilMoisture - WatBal->ct.MoistureWP));
     
     if (Crop->prm.Airducts) 
@@ -92,7 +92,7 @@ void EvapTra() {
         OxygenStress = 1.;
     }
     
-    WatBal->WaterStress = MoistureStress * OxygenStress;
+    WatBal->WaterStress = WatBal->MoistureStress * OxygenStress;
     // WatBal->WaterStress = 1.;
      
     WatBal->rt.Transpiration = WatBal->WaterStress * Evtra.MaxTranspiration;

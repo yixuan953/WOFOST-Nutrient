@@ -169,78 +169,53 @@ int main(int argc, char **argv)
         }
         printf("running %d - %d\n", Irri->StartYear, Irri->EndYear);
 
-        for (Lon = 0; Lon < Irri->nlon; Lon++)
-        {
-            for (Lat = 0; Lat < Irri->nlat; Lat++)
-            {
-                if (isnan(Sow_date[Lon][Lat])) 
-                {
-                    continue;
-                }
-
-                // Go back to the beginning of the list and rest grid value flag,and twso and length
-                 Grid = initial;
-              
-                 while (Grid)
-                 {
-                    Grid->flag = 0;
-                    char* sow_date = DekadDate(Sow_date[Lon][Lat]);
-                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
-                    strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
-                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
-                    free(sow_date);
-
-                    // for (i = 0; i <= Irri->Seasons; i++)
-                    // {
-                    //     Site->st_N_tot = Urea_inorg_N_appRate[Lon][Lat][i] + Other_inorg_N_appRate[Lon][Lat][i];
-                    // }
-                    Grid = Grid->next;
-                 } 
-            }      
-        }
+        head_irri = Irri;
+        Irri = Irri->next;
+        CleanIrri(head_irri);
+        free(head_irri);
     }
     
     // Reading fertilization data
-    while(Fert)
-    {
-        /* Get the fertilization data */
-        if (GetFertData(Fert) != 1)
-        {
-            fprintf(stderr, "Cannot get fertilization data.\n");
-            exit(0);
-        }
-        printf("running %d - %d\n", Fert->StartYear, Fert->EndYear);
+    // while(Fert)
+    // {
+    //     /* Get the fertilization data */
+    //     if (GetFertData(Fert) != 1)
+    //     {
+    //         fprintf(stderr, "Cannot get fertilization data.\n");
+    //         exit(0);
+    //     }
+    //     printf("running %d - %d\n", Fert->StartYear, Fert->EndYear);
 
-        for (Lon = 0; Lon < Fert->nlon; Lon++)
-        {
-            for (Lat = 0; Lat < Fert->nlat; Lat++)
-            {
-                if (isnan(Sow_date[Lon][Lat])) 
-                {
-                    continue;
-                }
+    //     for (Lon = 0; Lon < Fert->nlon; Lon++)
+    //     {
+    //         for (Lat = 0; Lat < Fert->nlat; Lat++)
+    //         {
+    //             if (isnan(Sow_date[Lon][Lat])) 
+    //             {
+    //                 continue;
+    //             }
 
-                // Go back to the beginning of the list and rest grid value flag,and twso and length
-                 Grid = initial;
+    //             // Go back to the beginning of the list and rest grid value flag,and twso and length
+    //              Grid = initial;
               
-                 while (Grid)
-                 {
-                    Grid->flag = 0;
-                    char* sow_date = DekadDate(Sow_date[Lon][Lat]);
-                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
-                    strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
-                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
-                    free(sow_date);
+    //              while (Grid)
+    //              {
+    //                 Grid->flag = 0;
+    //                 char* sow_date = DekadDate(Sow_date[Lon][Lat]);
+    //                 //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
+    //                 strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
+    //                 //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
+    //                 free(sow_date);
 
-                    // for (i = 0; i <= Fert->Seasons; i++)
-                    // {
-                    //     Site->st_N_tot = Urea_inorg_N_appRate[Lon][Lat][i] + Other_inorg_N_appRate[Lon][Lat][i];
-                    // }
-                    // Grid = Grid->next;
-                 } 
-            }      
-        }
-    }
+    //                 // for (i = 0; i <= Fert->Seasons; i++)
+    //                 // {
+    //                 //     Site->st_N_tot = Urea_inorg_N_appRate[Lon][Lat][i] + Other_inorg_N_appRate[Lon][Lat][i];
+    //                 // }
+    //                 // Grid = Grid->next;
+    //              } 
+    //         }      
+    //     }
+    // }
 
     while (Meteo)
     {
@@ -262,15 +237,15 @@ int main(int argc, char **argv)
                 }
 
                 // Go back to the beginning of the list and rest grid value flag,and twso and length
-                 Grid = initial;
+                Grid = initial;
               
-                 while (Grid)
+                while (Grid)
                  {
                     Grid->flag = 0;
                     char* sow_date = DekadDate(Sow_date[Lon][Lat]);
-                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
+                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date); //Check if the sowing date is read correctly
                     strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
-                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
+                    //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date); //Check if the sowing date in Grid -> start is replaced by the value in mask file read correctly
                     free(sow_date);
 
                     for (i = 0; i <= Meteo->Seasons; i++)
@@ -280,7 +255,7 @@ int main(int argc, char **argv)
                         Grid->crp->Seasons = 1;
                     }
                     Grid = Grid->next;
-                 }
+                }
                                
 
                  for (Day = 0; Day < Meteo->ntime; Day++)
@@ -316,8 +291,7 @@ int main(int argc, char **argv)
                         /* Only simulate between start and end year */ 
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
-                            
-                            
+                                                     
                             /* Determine if the sowing already has occurred */
                             IfSowing(Grid->start); // To transform date format from "MM-DD" to 
 
