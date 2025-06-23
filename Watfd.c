@@ -65,21 +65,6 @@ void InitializeWatBal()
 /* Purpose: Calculate the rate of the WatBal struct  */
 /*---------------------------------------------------*/
 
-int is_leap_year(int year) {
-    return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
-}
-
-int get_month_from_doy(int doy, int is_leap) {
-    int month_days[12] = {31, is_leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    int cumulative = 0;
-    for (int m = 0; m < 12; m++) {
-        cumulative += month_days[m];
-        if (doy <= cumulative)
-            return m + 1;  // 1-based month
-    }
-    return -1;  // invalid doy
-}
-
 
 void RateCalulationWatBal() {
    
@@ -88,31 +73,24 @@ void RateCalulationWatBal() {
     float Perc1, Perc2;
     float WaterEq;
     float WELOW;
-    int IRRITimeStep; // As the time step of irrigation data is monthly instead of daily
+    int Irri_time_index; // As the time step of irrigation data is monthly instead of daily
     float RINPRE; // Preliminary infiltration rate 
     
     /* Get the irrigation rate */
-    // ---- Get the doy and month ----
-    int year = MeteoYear[Day];
-    int day_counter = MeteoDay[Day];
-    int doy = day_counter + 1;  // 1-based day-of-year
-    int is_leap = is_leap_year(year);
-    int month = get_month_from_doy(doy, is_leap);
 
+    Irri_time_index = ((Crop->Seasons-1) * 12 + MeteoMonth[Day])-1; 
     // ---- Compute IRRITimeStep ----
-    if (WatBal->MoistureStress < 1.0) {
-        int season_num = Crop->Seasons;
-        int month_num = month;
-        IRRITimeStep = (season_num - 1) * 12 + (month_num - 1);
-        //IRRITimeStep = (int)((Crop->Seasons - 1) * 12 + (month - 1));
-        WatBal->rt.Irrigation = Irrigation_Rate[Lon][Lat][IRRITimeStep];
+    if (WatBal->MoistureStress<1) {
+        WatBal->rt.Irrigation = Irrigation_Rate[Lon][Lat][Irri_time_index];
     } else {
         WatBal->rt.Irrigation = 0.0;
     }
 
     // ---- Debug output ----
-    printf("IRRITimeStep=%d Lon=%d Lat=%d Season=%d Month=%d Year=%d DOY=%d Irr=%.2f\n",
-           IRRITimeStep, Lon, Lat, Crop->Seasons, month, year, doy, WatBal->rt.Irrigation);
+    printf("Irri_time_index=%d Lon=%d Lat=%d Season=%d Year=%d Month=%d DOY=%d MoistureStress=%.2f WatIrr=%.2f Irr=%.2f\n",
+           Irri_time_index, Lon, Lat, Crop->Seasons, MeteoYear[Day], MeteoMonth[Day], MeteoDay[Day], WatBal->MoistureStress, WatBal->rt.Irrigation, Irrigation_Rate[Lon][Lat][Irri_time_index]);
+
+// End of the new code
 
     /* How irrigation rate was filld before */
     // WatBal->rt.Irrigation = List(Mng->Irrigation);

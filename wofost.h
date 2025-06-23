@@ -455,6 +455,7 @@ Weather *Meteo; /* Place holder for the meteo filenames and lat/lon */
 /** Meteorological Variables  **/
 int Station, Year;
 int MeteoYear[METEO_LENGTH];
+int MeteoMonth[METEO_LENGTH];
 int MeteoDay[METEO_LENGTH];
 int FertYear[FERT_LENGTH];
 int IrriYear[FERT_LENGTH];

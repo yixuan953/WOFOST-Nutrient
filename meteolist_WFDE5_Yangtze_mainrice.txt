@@ -1,4 +1,4 @@
-/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Meteo/Yangtze/ 1981 2019 5 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Yangtze/Yangtze_mainrice_mask.nc
+/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Meteo/Yangtze/ 1981 2019 10 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Yangtze/Yangtze_mainrice_mask.nc
 Yangtze_Tmin_daily_1981-2019.nc  TMIN tasmin
 Yangtze_Tmax_daily_1981-2019.nc  TMAX tasmax
 Yangtze_SWdown_daily_1981-2019.nc  RADIATION SWdown

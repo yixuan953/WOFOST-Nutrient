@@ -26,6 +26,8 @@ int GetMeteoData(Weather* meteo)
     double minlat, minlon, maxlat, maxlon;
     double minlat_tmp, minlon_tmp, maxlat_tmp, maxlon_tmp;
     int minyear_tmp, maxyear_tmp, minday_tmp, maxday_tmp;
+    int DaysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};  // Jan to Dec
+    int month_day_conter;
     float ****variable;
     float *data;
     
@@ -626,14 +628,36 @@ int GetMeteoData(Weather* meteo)
         for (l = 0; l < time_length; l++) {
             if (l == 0) {
                 MeteoYear[l] = meteo->StartYear;
+                MeteoMonth[l] = 1;
                 MeteoDay[l] = 1; //assume that the series start January first
+                month_day_conter = 1;
             } else {
                 MeteoYear[l] = MeteoYear[l - 1];
+                MeteoMonth[l] = MeteoMonth[l - 1];
                 MeteoDay[l] = MeteoDay[l - 1] + 1;
-                
+                month_day_conter += 1;
+
+                int month_index = MeteoMonth[l] - 1;
+                int days_this_month = DaysInMonth[month_index];
+
+                // Adjust for leap year if current month is February
+                if (month_index == 1 && leap_year(MeteoYear[l])==366){
+                    days_this_month = 29;
+                }
+
+                // If the day exceeds the number of days in this month
+                if (month_day_conter > days_this_month) {
+                    month_day_conter = 1;
+                    MeteoMonth[l] += 1;
+
+                    if (MeteoMonth[l] > 12) {
+                        MeteoMonth[l] = 1;
+                    }
+                }
+
                 if(MeteoDay[l] > leap_year(MeteoYear[l])) {
-                    MeteoYear[l] = MeteoYear[l] + 1;
-                    MeteoDay[l] = 1;
+                      MeteoYear[l] = MeteoYear[l] + 1;
+                      MeteoDay[l] = 1;
                 }
             }
         }

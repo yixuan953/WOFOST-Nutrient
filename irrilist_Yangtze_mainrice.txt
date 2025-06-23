@@ -1,2 +1,2 @@
-/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Irrigation/Yangtze/ 1980 2017 6 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Yangtze/Yangtze_mainrice_mask.nc
+/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Irrigation/Yangtze/ 1980 2017 10 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Yangtze/Yangtze_mainrice_mask.nc
 Yangtze_mainrice_monthly_Irri_Rate.nc  IRRIRATE Irrigation_Rate
