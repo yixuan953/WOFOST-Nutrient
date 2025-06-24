@@ -281,7 +281,7 @@ int GetIrriData(Water_Irri* Irri)
                 for (l = 0; l < time_length; l++) {
                     Irrigation_Rate[j][k][l] = roundz(Irrigation_Rate[j][k][l], 1); // [mm]
                     // Check if the irrigation data is written correctly
-                    printf("%3d %3d %3d %3d %5.2f %5.2f %5.2f\n", j, k, IrriYear[l], IrriMonth[l], Irrigation_Rate[j][k][l], Latitude[k], Longitude[j]);
+                    // printf("%3d %3d %3d %3d %5.2f %5.2f %5.2f\n", j, k, IrriYear[l], IrriMonth[l], Irrigation_Rate[j][k][l], Latitude[k], Longitude[j]);
                     }
             }
         }

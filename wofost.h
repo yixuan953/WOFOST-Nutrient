@@ -556,5 +556,6 @@ typedef struct IRRIWATER {
 Water_Irri *Irri; /* The name of the structure IRRIWATER*/
 
 float ***Irrigation_Rate; //  [-]
+int **Irri_time_count;
 
 #endif	// 

@@ -173,6 +173,7 @@ int main(int argc, char **argv)
         Irri = Irri->next;
         CleanIrri(head_irri);
         free(head_irri);
+
     }
     
     // Reading fertilization data
@@ -231,9 +232,19 @@ int main(int argc, char **argv)
         {
             for (Lat = 0; Lat < Meteo->nlat; Lat++)
             {
+                
                 if (isnan(Sow_date[Lon][Lat])) // Start the simulation if all variables have the value
                 {
                     continue;
+                }
+
+                // Initialize the time step of irrigation data
+                Irri_time_count = malloc(Meteo->nlon * sizeof(int *));
+                for (size_t i = 0; i < Meteo->nlon; i++) {
+                    Irri_time_count[i] = malloc(Meteo->nlat * sizeof(int));
+                    for (size_t j = 0; j < Meteo->nlat; j++) {
+                        Irri_time_count[i][j] = -1;  // Initialize
+                    }
                 }
 
                 // Go back to the beginning of the list and rest grid value flag,and twso and length
@@ -369,6 +380,7 @@ int main(int argc, char **argv)
                             }
                         }
 
+
                         /* Store the daily calculations in the Grid structure */ /* 将每天的计算结果存储在Grid结构中 */
                         Grid->crp = Crop;
                         Grid->soil = WatBal;
@@ -377,6 +389,13 @@ int main(int argc, char **argv)
                         Grid = Grid->next;
                     }
                 }
+                 // The daily simulation is finished here, that's the time to clean the Irri_time_count:
+                 for (size_t i = 0; i < Meteo->nlon; i++) {
+                    free(Irri_time_count[i]);
+                 }
+                 free(Irri_time_count);
+                 Irri_time_count = NULL;
+
             }
         }
 
