@@ -4,7 +4,7 @@
 #include <time.h>
 #include <math.h>
 
-#define NR_VARIABLES_CRP	66
+#define NR_VARIABLES_CRP	67
 #define NR_TABLES_CRP   	22
 #define NR_VARIABLES_SITE       12
 #define NR_TABLES_SITE          1
@@ -181,7 +181,8 @@ typedef struct PARAMETERS {
         float TCNT;   
         float TCPT;   
         float TCKT;   
-        float N_fixation; 
+        float N_fixation;
+        float Frac_translocation;
         } Parameters;
 
 
@@ -328,6 +329,7 @@ typedef struct PLANT {
         float fac_lv;
         float fac_st;
         float fac_so;
+        float rt_DevPrev;
         
         Parameters prm;
         
@@ -403,12 +405,32 @@ typedef struct FIELD {
         } Field;
 Field *Site; /* Place holder for the current site simulations */
 
+// typedef struct NP_CYCLING {
+//         /* Related parameters */
+//         float HumificationRate;
+        
+//         /* Related states and rates */
+//         float st_TSMD;
+//         float st_N_Avail;
+//         float st_P_Avail;
+
+//         float rt_SOC_decomp;
+//         float rt_SON_decomp;
+//         float rt_SOP_decomp;
+        
+//         /** Table related to N, P cycling **/
+        
+//         } NPCycling;
+// NPCycling *NPC; 
+
+
 /* Place holder for a simulation unit */
 typedef struct SIMUNIT {
         Plant *crp;
         Field *ste;
         Management *mng;
         Soil  *soil;
+        // NPCycling *npc;
         int emergence;
         int file_DO;
         int file_AO;
@@ -464,7 +486,7 @@ float CO2;
 double Longitude[DOMAIN_LENGTH], Latitude[DOMAIN_LENGTH];
 
 // --- I added these variables to the original crop mask.nc file ----
-// float **HA; // Harvest area
+//float **HA; // Harvest area
 float **Sow_date; // Average sowing date: This will replace the sowing date
 float **TSUM1; // TSUM1
 float **TSUM2; // TSUM2

@@ -11,7 +11,11 @@ void RatesToZero()
     Crop->drt.roots = 0.;
     Crop->drt.leaves = 0.;
     Crop->drt.stems = 0.;
-  
+
+    /* Set the development rate */
+    if (Crop->st.Development > 1.) //in case of translocation
+        Crop->rt_DevPrev = Crop->rt.Development;    
+
     /* Set the development rate */
     Crop->rt.Development = 0.;
     Crop->rt.vernalization = 0.;
@@ -103,17 +107,20 @@ void RatesToZero()
     Site->rt_K_tot = 0.;
     
     /* Set the water balance rates */
-    WatBal->rt.EvapWater         = 0.;
-    WatBal->rt.EvapSoil          = 0.;   
-    WatBal->rt.Infiltration      = 0.;
-    WatBal->rt.Irrigation        = 0.;
-    WatBal->rt.Loss              = 0.;
-    WatBal->rt.Moisture          = 0.;
-    WatBal->rt.MoistureLOW       = 0.;
-    WatBal->rt.Percolation       = 0.;
-    WatBal->rt.RootZoneMoisture  = 0.;
-    WatBal->rt.Runoff            = 0.;
-    WatBal->rt.WaterRootExt      = 0.;
-    WatBal->rt.RootZoneMoisture  = 0.;
+    if (MeteoDay>1){
+        WatBal->rt.EvapWater         = 0.;
+        WatBal->rt.EvapSoil          = 0.;   
+        WatBal->rt.Infiltration      = 0.;
+        WatBal->rt.Irrigation        = 0.;
+        WatBal->rt.Loss              = 0.;
+        WatBal->rt.Moisture          = 0.;
+        WatBal->rt.MoistureLOW       = 0.;
+        WatBal->rt.Percolation       = 0.;
+        WatBal->rt.RootZoneMoisture  = 0.;
+        WatBal->rt.Runoff            = 0.;
+        WatBal->rt.WaterRootExt      = 0.;
+        WatBal->rt.RootZoneMoisture  = 0.;
+    }
+
 }
 

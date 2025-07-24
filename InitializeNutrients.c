@@ -84,7 +84,10 @@ void InitializeNutrients()
     Site->st_N_mins = Mng->N_Mins;
     Site->st_P_mins = Mng->P_Mins;
     Site->st_K_mins = Mng->K_Mins;
-       
+    
+    /* Set the soil nutrient states */
+    //NPC->st_N_Avail = Urea_inorg_N_appRate[Lon][Lat][Crop->Seasons] + Urea_inorg_N_appRate[Lon][Lat][Crop->Seasons];
+
     /* No nutrient stress at initialization */
     Crop->N_st.Indx = 1.;
     Crop->P_st.Indx = 1.;

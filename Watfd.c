@@ -36,11 +36,20 @@ void InitializeWatBal()
     /* Initial soil moisture for a rice crop */
     if (Crop->prm.Airducts) Site->MaxInitSoilM = WatBal->ct.MoistureSAT; 
     
-    WatBal->st.Moisture = limit(WatBal->ct.MoistureWP, Site->MaxInitSoilM, 
-            WatBal->ct.MoistureWP + Site->InitSoilMoisture/Crop->st.RootDepth);
+    if(Crop->Sowing == 0){
+        WatBal->st.Moisture = Site->MaxInitSoilM;
+    } else{
+        WatBal->st.Moisture = limit(WatBal->ct.MoistureWP, Site->MaxInitSoilM, 
+                WatBal->ct.MoistureWP + Site->InitSoilMoisture/Crop->st.RootDepth);
+    }
+
     
     /* Initial moisture amount in rootable zone */
-    WatBal->st.RootZoneMoisture = WatBal->st.Moisture * Crop->st.RootDepth;
+    if(Crop->Sowing == 0){
+       WatBal->st.RootZoneMoisture = Site->MaxInitSoilM;
+    } else{
+       WatBal->st.RootZoneMoisture = WatBal->st.Moisture * Crop->st.RootDepth;
+    }   
     
     /*  Soil evaporation, days since last rain */
     WatBal->DaysSinceLastRain = 1.;
@@ -49,10 +58,15 @@ void InitializeWatBal()
             WatBal->DaysSinceLastRain = 5.;
     
     /* Moisture amount between rooted zone and max.rooting depth */
-    WatBal->st.MoistureLOW  = limit (0., WatBal->ct.MoistureSAT
-        *(Crop->prm.MaxRootingDepth - Crop->st.RootDepth), 
-        Site->InitSoilMoisture + Crop->prm.MaxRootingDepth * WatBal->ct.MoistureWP - 
-            WatBal->st.RootZoneMoisture);
+    if (Crop->Sowing == 0){
+        WatBal->st.MoistureLOW = 0;
+    } else {
+        WatBal->st.MoistureLOW  = limit (0., WatBal->ct.MoistureSAT
+                *(Crop->prm.MaxRootingDepth - Crop->st.RootDepth), 
+                Site->InitSoilMoisture + Crop->prm.MaxRootingDepth * WatBal->ct.MoistureWP - 
+                WatBal->st.RootZoneMoisture);
+    }
+
     
     KDiffuse = Afgen(Crop->prm.KDiffuseTb, &(Crop->st.Development));
     WatBal->rt.EvapSoil = max(0., Penman.ES0 * exp(-0.75 * KDiffuse * Crop->st.LAI));
@@ -77,17 +91,18 @@ void RateCalulationWatBal() {
     
     Irri_time_index = ((Crop->Seasons-1) * 12 + MeteoMonth[Day])-1; 
     // ---- Compute IRRITimeStep ----
-    if (WatBal->MoistureStress < 0.95 && Irri_time_count[Lon][Lat] != Irri_time_index) {
+    if (WatBal->MoistureStress < 0.95 && Irri_time_count[Lon][Lat] != Irri_time_index) {    
         WatBal->rt.Irrigation = Irrigation_Rate[Lon][Lat][Irri_time_index];
         Irri_time_count[Lon][Lat] = Irri_time_index; // To mark that for this time step (monthly), irrigation has been applied
-        printf("Irri_time_index=%d Lon=%d Lat=%d Season=%d Year=%d Month=%d DOY=%d MoistureStress=%.2f WatIrr=%.2f Irr=%.2f\n",
-           Irri_time_index, Lon, Lat, Crop->Seasons, MeteoYear[Day], MeteoMonth[Day], MeteoDay[Day],
-           WatBal->MoistureStress, WatBal->rt.Irrigation, Irrigation_Rate[Lon][Lat][Irri_time_index]);
+        
+        /* Check if irrigation data is well input*/
+        // printf("Irri_time_index=%d Lon=%d Lat=%d Season=%d Year=%d Month=%d DOY=%d MoistureStress=%.2f WatIrr=%.2f Irr=%.2f\n",
+        //    Irri_time_index, Lon, Lat, Crop->Seasons, MeteoYear[Day], MeteoMonth[Day], MeteoDay[Day],
+        //    WatBal->MoistureStress, WatBal->rt.Irrigation, Irrigation_Rate[Lon][Lat][Irri_time_index]);
     } else {
         WatBal->rt.Irrigation = 0.0;
     }
-
-// End of the new code
+    // End of the new code
 
     /* How irrigation rate was filld before */
     // WatBal->rt.Irrigation = List(Mng->Irrigation);
@@ -136,37 +151,58 @@ void RateCalulationWatBal() {
         RINPRE = min(WatBal->ct.MaxPercolRTZ * Step, 
                 Available) / Step;
     }
+
+
+    /* I added this to calculate the loss and percolation when no crop is planted*/
+    if (Crop->Sowing == 0){
+        WaterEq = WatBal->ct.MoistureFC * Crop->prm.MaxRootingDepth; // I assume the first layer is rooted zone, and the depth of the second layer is 0 
+        Perc1 = limit(0., WatBal->ct.MaxPercolRTZ, 
+                (WatBal->st.RootZoneMoisture - WaterEq) / Step - 
+                WatBal->rt.Transpiration - WatBal->rt.EvapSoil);
+        WELOW = 0; // As the layer depth is 0
+
+        WatBal->rt.Loss  = limit (0., WatBal->ct.MaxPercolSubS, 
+                (WatBal->st.RootZoneMoisture - WaterEq)/Step - WatBal->rt.Transpiration - WatBal->rt.EvapSoil - Perc1); // I assume the subsurface runoff is dependent on the soil moisture changes of the first layer 
+        Perc2 = Perc1; // As there's only one layer
+        
+        /* For rice water losses are limited to K0/20 */
+        if (Crop->prm.Airducts) 
+            WatBal->rt.Loss = min(WatBal->rt.Loss, 0.05*WatBal->ct.K0); 
+
+    } else{
+
+        /* Equilibrium amount of soil moisture in rooted zone*/
+        WaterEq = WatBal->ct.MoistureFC * Crop->st.RootDepth;
+        
+        /* Percolation from rooted zone to subsoil equals amount of   */
+        /* Excess moisture in rooted zone (not to exceed conductivity)*/
+        Perc1 = limit(0., WatBal->ct.MaxPercolRTZ, 
+                (WatBal->st.RootZoneMoisture - WaterEq) / Step - 
+                WatBal->rt.Transpiration - WatBal->rt.EvapSoil);
+        
+        /* Loss of water at the lower end of the maximum root zone */
+        /* Equilibrium amount of soil moisture below rooted zone   */
+        WELOW = WatBal->ct.MoistureFC * (Crop->prm.MaxRootingDepth - Crop->st.RootDepth);
+        WatBal->rt.Loss  = limit (0., WatBal->ct.MaxPercolSubS, 
+                (WatBal->st.MoistureLOW - WELOW)/Step + Perc1);
+        
+        /* For rice water losses are limited to K0/20 */
+        if (Crop->prm.Airducts) 
+            WatBal->rt.Loss = min(WatBal->rt.Loss, 0.05*WatBal->ct.K0);
+        
+        /* Percolation not to exceed uptake capacity of subsoil */
+        Perc2 = ((Crop->prm.MaxRootingDepth - Crop->st.RootDepth) * WatBal->ct.MoistureSAT - 
+                WatBal->st.MoistureLOW) / Step + WatBal->rt.Loss;
+    }
     
-    /* Equilibrium amount of soil moisture in rooted zone*/
-    WaterEq = WatBal->ct.MoistureFC * Crop->st.RootDepth;
-    
-    /* Percolation from rooted zone to subsoil equals amount of   */
-    /* Excess moisture in rooted zone (not to exceed conductivity)*/
-    Perc1 = limit(0., WatBal->ct.MaxPercolRTZ, 
-            (WatBal->st.RootZoneMoisture - WaterEq) / Step - 
-            WatBal->rt.Transpiration - WatBal->rt.EvapSoil);
-    
-    /* Loss of water at the lower end of the maximum root zone */
-    /* Equilibrium amount of soil moisture below rooted zone   */
-    WELOW = WatBal->ct.MoistureFC * (Crop->prm.MaxRootingDepth - Crop->st.RootDepth);
-    WatBal->rt.Loss  = limit (0., WatBal->ct.MaxPercolSubS, 
-            (WatBal->st.MoistureLOW - WELOW)/Step + Perc1);
-    
-    /* For rice water losses are limited to K0/20 */
-    if (Crop->prm.Airducts) 
-        WatBal->rt.Loss = min(WatBal->rt.Loss, 0.05*WatBal->ct.K0);
-    
-    /* Percolation not to exceed uptake capacity of subsoil */
-    Perc2 = ((Crop->prm.MaxRootingDepth - Crop->st.RootDepth) * WatBal->ct.MoistureSAT - 
-            WatBal->st.MoistureLOW) / Step + WatBal->rt.Loss;
-    
-    WatBal->rt.Percolation = min(Perc1, Perc2);
-   
+    WatBal->rt.Percolation = min(Perc1, Perc2);  
+           
     
     /* Adjustment of the infiltration rate */
+
     WatBal->rt.Infiltration = max(0, min(RINPRE,
-          (WatBal->ct.MoistureSAT - WatBal->st.Moisture) * Crop->st.RootDepth/Step + 
-          WatBal->rt.Transpiration + WatBal->rt.EvapSoil + WatBal->rt.Percolation));
+        (WatBal->ct.MoistureSAT - WatBal->st.Moisture) * Crop->st.RootDepth/Step + 
+        WatBal->rt.Transpiration + WatBal->rt.EvapSoil + WatBal->rt.Percolation));
             
     /* Rates of change in amounts of moisture W and WLOW */
     WatBal->rt.RootZoneMoisture = -WatBal->rt.Transpiration - WatBal->rt.EvapSoil -  
@@ -238,7 +274,11 @@ void IntegrationWatBal()
     }
 
     /* Mean soil moisture content in rooted zone */
-    WatBal->st.Moisture = WatBal->st.RootZoneMoisture/Crop->st.RootDepth;
+     if (Crop->Sowing == 0) {  // assuming depth must be positive
+            WatBal->st.Moisture = WatBal->st.RootZoneMoisture / Crop->prm.MaxRootingDepth;  
+    } else{
+            WatBal->st.Moisture = WatBal->st.RootZoneMoisture / Crop->st.RootDepth;  
+    }
     
     /* Store the infiltration rate of the previous day */
      WatBal->InfPreviousDay = WatBal->rt.Infiltration;

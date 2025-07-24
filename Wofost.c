@@ -171,52 +171,21 @@ int main(int argc, char **argv)
 
         head_irri = Irri;
         Irri = Irri->next;
-        CleanIrri(head_irri);
-        free(head_irri);
-
     }
     
-    // Reading fertilization data
-    // while(Fert)
-    // {
-    //     /* Get the fertilization data */
-    //     if (GetFertData(Fert) != 1)
-    //     {
-    //         fprintf(stderr, "Cannot get fertilization data.\n");
-    //         exit(0);
-    //     }
-    //     printf("running %d - %d\n", Fert->StartYear, Fert->EndYear);
-
-    //     for (Lon = 0; Lon < Fert->nlon; Lon++)
-    //     {
-    //         for (Lat = 0; Lat < Fert->nlat; Lat++)
-    //         {
-    //             if (isnan(Sow_date[Lon][Lat])) 
-    //             {
-    //                 continue;
-    //             }
-
-    //             // Go back to the beginning of the list and rest grid value flag,and twso and length
-    //              Grid = initial;
-              
-    //              while (Grid)
-    //              {
-    //                 Grid->flag = 0;
-    //                 char* sow_date = DekadDate(Sow_date[Lon][Lat]);
-    //                 //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
-    //                 strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
-    //                 //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date);
-    //                 free(sow_date);
-
-    //                 // for (i = 0; i <= Fert->Seasons; i++)
-    //                 // {
-    //                 //     Site->st_N_tot = Urea_inorg_N_appRate[Lon][Lat][i] + Other_inorg_N_appRate[Lon][Lat][i];
-    //                 // }
-    //                 // Grid = Grid->next;
-    //              } 
-    //         }      
-    //     }
-    // }
+    /* Reading fertilization data */
+    while(Fert)
+    {
+        /* Get the fertilization data */
+        if (GetFertData(Fert) != 1)
+        {
+            fprintf(stderr, "Cannot get fertilization data.\n");
+            exit(0);
+        }
+        printf("running %d - %d\n", Fert->StartYear, Fert->EndYear);   
+        head_nutri = Fert;
+        Fert = Fert->next;        
+    }
 
     while (Meteo)
     {
@@ -257,7 +226,8 @@ int main(int argc, char **argv)
                     //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date); //Check if the sowing date is read correctly
                     strcpy(Grid->start, sow_date); //Use strcpy to assign the new value
                     //printf("%s %4.2f %s\n", Grid->start, Sow_date[Lon][Lat], sow_date); //Check if the sowing date in Grid -> start is replaced by the value in mask file read correctly
-                    free(sow_date);
+                    free(sow_date);                        
+
 
                     for (i = 0; i <= Meteo->Seasons; i++)
                     {
@@ -267,7 +237,6 @@ int main(int argc, char **argv)
                     }
                     Grid = Grid->next;
                 }
-                               
 
                  for (Day = 0; Day < Meteo->ntime; Day++)
                  // assume that the series start January first // 假设系列从一月一日开始
@@ -299,24 +268,60 @@ int main(int argc, char **argv)
                         Temp = 0.5 * (Tmax[Lon][Lat][Day] + Tmin[Lon][Lat][Day]);
                         DayTemp = 0.5 * (Tmax[Lon][Lat][Day] + Temp);
 
+                        if (Day <=1){
+                        
+                            /* Initialize soil mositure condition here */
+                            InitializeWatBal(); // Initialize it only on the first day
+                            RatesToZero();
+
+                            /* Initialize soil P pools */
+
+                        }
+
                         /* Only simulate between start and end year */ 
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
-                                                     
+                                                        
                             /* Determine if the sowing already has occurred */
                             IfSowing(Grid->start); // To transform date format from "MM-DD" to 
+
+                            if(Crop->Sowing <1 || Crop->Emergence == 0)
+                            {
+                                Astro();
+                                CalcPenman();
+                                CalcPenmanMonteith();
+                                RateCalulationWatBal(); 
+                                IntegrationWatBal();
+                                //printf("%4d,%3d,%4.2f,%4.2f,%4.2f,%4.2f\n",MeteoYear[Day],Day,WatBal->st.SurfaceStorage,WatBal->rt.Infiltration,WatBal->st.Moisture,WatBal->st.MoistureLOW); //Check if the soil moisture could be updated
+                            }
 
                             /* If sowing has occurred than determine the emergence */ /* 如果播种已经发生，则确定出苗 */
                             if (Crop->Sowing >= 1 && Crop->Emergence == 0)
                             {
-                                if (EmergenceCrop(Emergence))
+
+                                 /* Add fertilization input function here*/
+                                 // 1. Initialize N input every year: Residue from last year, Organic, Inorganic
+                                 // 2. Add P input every year: Residue from last year, organic, inorganic
+
+
+                                 /* Add N losses calculation function here*/
+                                 // After N is input, we assume the gaseous emission (N_apply * EF) and surface runoff (N_apply * L_surface), and humification (N_hum) will happen immediatly
+
+                                  
+                                 /* Update the soil P pool here considering the P fertilizer input */
+                                 // After P is input, we assume part of the organic P cannot be directly used. The rest will supply the soil P pool
+
+                                if (EmergenceCrop(Emergence)) // Check if the emergence can happen or not
                                 {
                                     /* Initialize: set state variables */ /* 初始化：设置状态变量 */
                                     InitializeCrop();
-                                    InitializeWatBal();
-                                    InitializeNutrients();
+                                    //InitializeWatBal();
+                                    InitializeNutrients(); // Consider delete the soil total N, P within this function, only initialize crop N, P content                           
+
                                 }
                             }
+
+                            
 
                             if (Crop->Sowing >= 1 && Crop->Emergence == 1)
                             {
@@ -326,14 +331,20 @@ int main(int argc, char **argv)
                                     CalcPenman();
                                     CalcPenmanMonteith();
 
-                                    /* Calculate the evapotranspiration */ /* 计算蒸散发 */
-                                    EvapTra();
+                                    /* Calculate the evapotranspiration */ 
+                                    EvapTra(); // Mainly for crop
 
-                                    /* Set the rate variables to zero */ /* 将速率变量置零 */
-                                    RatesToZero();
+                                    /* Set the rate variables to zero */ 
+                                    RatesToZero(); // It includes the rate in terms of crop, site, and WatBal
 
-                                    /* Rate calculations */ /* 速率计算 */
-                                    RateCalulationWatBal();
+                                    /* Rate calculations */ 
+                                    RateCalulationWatBal(); // Here the water balance is calculated considering the input of irrigation
+
+                                    /* Add TSMD and SOC, SON, SOP decomposition calculation here*/
+
+
+                                    /* Update the soil P pool here considering P decomposition and deposition*/
+
                                     Partioning();
                                     RateCalcultionNutrients();
                                     RateCalculationCrop();
@@ -344,24 +355,37 @@ int main(int argc, char **argv)
                                     /* State calculations */ /* 状态计算 */
                                     IntegrationCrop();
                                     IntegrationWatBal();
-                                    IntegrationNutrients();
+                                    IntegrationNutrients(); 
+
+                                    // Here:
+                                    // 1. N_avail = N_apply *(1 - EF - L_surface - hum) + N_decomposition + N_deposition
+                                    // 2. N_surplus = N_avail - (N_uptake - + N_decomposition + N_deposition)  
+                                    
+                                    /* Update the soil P pool */
+                                    // Considering the daily crop uptake, surface runoff, subsurface runoff, leaching.
+
 
                                     /* Daily scale results */ /* 状态计算 */
-                                    Output_Daily(files_DO[Grid->file_DO]);
+                                    // Output_Daily(files_DO[Grid->file_DO]);
 
                                     /* Update the number of days that the crop has grown*/ /* 更新作物已经生长的天数 */
                                     Crop->GrowthDay++;
                                     
                                 }
+
                                 else
                                 {
+                                    /* Add N_leaching calculation here */ 
+                                    
+
+                                    /* Add N denitrification calculation here */ 
+
+
                                     /* Write to the output files: Seasonal scale */ /* 写入输出文件 */
                                     Grid->twso[Crop->GrowthDay] = Crop->st.storage;
                                     Grid->length[Crop->GrowthDay] = Crop->GrowthDay;
-                                    // if (Meteo->Seasons == Crop->Seasons)
-                                    // {
+
                                     Output_Annual(files_AO[Grid->file_AO]);
-                                    //}
 
                                     /* Clean the LeaveProperties */ /* 清理LeaveProperties */
                                     while (Crop->LeaveProperties != NULL)
@@ -378,7 +402,9 @@ int main(int argc, char **argv)
                                     Crop->Seasons++;
                                 }
                             }
-                        }
+                        Output_Daily(files_DO[Grid->file_DO]);
+                        
+                        }   
 
 
                         /* Store the daily calculations in the Grid structure */ /* 将每天的计算结果存储在Grid结构中 */
@@ -389,12 +415,12 @@ int main(int argc, char **argv)
                         Grid = Grid->next;
                     }
                 }
-                 // The daily simulation is finished here, that's the time to clean the Irri_time_count:
+                // The daily simulation is finished here, that's the time to clean the Irri_time_count:
                  for (size_t i = 0; i < Meteo->nlon; i++) {
                     free(Irri_time_count[i]);
                  }
                  free(Irri_time_count);
-                 Irri_time_count = NULL;
+                Irri_time_count = NULL;
 
             }
         }
@@ -436,6 +462,5 @@ int main(int argc, char **argv)
     /* Go back to the beginning of the list */ /* 返回到列表的开始 */
     Grid = initial;
     Clean(Grid); // 清理Grid结构
-
     return 1;
 }

@@ -19,6 +19,9 @@ void IntegrationNutrients()
     Site->st_N_mins  = max(0., Site->st_N_mins - Site->rt_N_mins);
     Site->st_P_mins  = max(0., Site->st_P_mins - Site->rt_P_mins);
     Site->st_K_mins  = max(0., Site->st_K_mins - Site->rt_K_mins);
+
+    /* Changes of the N, P cycling integration*/
+    //NPC->st_N_Avail  = max(0., NPC->st_N_Avail + NPC->rt_SON_decomp + N_total_dep[Lon][Lat][Day]); // For testing
         
     /* Uptake */
     Crop->N_st.Uptake += Crop->N_rt.Uptake;

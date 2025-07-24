@@ -43,7 +43,7 @@ void EvapTra() {
     float CriticalSoilMoisture;
     float KDiffuse;
     float MaxReductionOxygenStress;
-    //float MoistureStress;
+    //float MoistureStress; // As this is already stored in the WatBal
     float OxygenStress;
     float SoilMoistureAeration;
     float SoilWatDepletion;

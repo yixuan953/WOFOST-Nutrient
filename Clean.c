@@ -454,7 +454,7 @@ void CleanFert(Nutri *Fert)
 
 
 // ------ Clean the irrigation file ----
-void CleanIrri(Nutri *Fert)
+void CleanIrri(Water_Irri *Irri)
 {
     size_t j, k;
     for (j = 0; j < Meteo->nlon; j++) {
@@ -463,10 +463,10 @@ void CleanIrri(Nutri *Fert)
         }
         free(Irrigation_Rate[j]);
         free(Sow_date[j]);
-        free(Irri_time_count[j]);
+       // free(Irri_time_count[j]);
     }
 
     free(Irrigation_Rate);
     free(Sow_date);
-    free(Irri_time_count);
+    //free(Irri_time_count);
 }
