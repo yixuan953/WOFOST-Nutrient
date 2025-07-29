@@ -122,5 +122,11 @@ void RatesToZero()
         WatBal->rt.RootZoneMoisture  = 0.;
     }
 
+    /* Set the decomposition rates */
+    NPC->decomp_rt.SOC_decomp = 0.;
+    NPC->decomp_rt.SON_decomp = 0.;
+    NPC->decomp_rt.SOP_decomp = 0.;
+
+
 }
 

@@ -4,6 +4,7 @@
 #include "extern.h"
 #include "penman.h"
 #include "wofost.h"
+#include "npcycling.h"
 
 /*------------------------------------------------*/
 /* function InitializeWatBal                      */
@@ -46,7 +47,7 @@ void InitializeWatBal()
     
     /* Initial moisture amount in rootable zone */
     if(Crop->Sowing == 0){
-       WatBal->st.RootZoneMoisture = Site->MaxInitSoilM;
+       WatBal->st.RootZoneMoisture = WatBal->st.Moisture * Crop->prm.MaxRootingDepth;
     } else{
        WatBal->st.RootZoneMoisture = WatBal->st.Moisture * Crop->st.RootDepth;
     }   
@@ -67,7 +68,10 @@ void InitializeWatBal()
                 WatBal->st.RootZoneMoisture);
     }
 
-    
+    /* Initial Precipitation surplus and TSMD */
+    WatBal->st.PreSurplus = 0;
+    WatBal->st.TSMD = 0;
+
     KDiffuse = Afgen(Crop->prm.KDiffuseTb, &(Crop->st.Development));
     WatBal->rt.EvapSoil = max(0., Penman.ES0 * exp(-0.75 * KDiffuse * Crop->st.LAI));
    
@@ -199,7 +203,6 @@ void RateCalulationWatBal() {
            
     
     /* Adjustment of the infiltration rate */
-
     WatBal->rt.Infiltration = max(0, min(RINPRE,
         (WatBal->ct.MoistureSAT - WatBal->st.Moisture) * Crop->st.RootDepth/Step + 
         WatBal->rt.Transpiration + WatBal->rt.EvapSoil + WatBal->rt.Percolation));
@@ -207,7 +210,8 @@ void RateCalulationWatBal() {
     /* Rates of change in amounts of moisture W and WLOW */
     WatBal->rt.RootZoneMoisture = -WatBal->rt.Transpiration - WatBal->rt.EvapSoil -  
             WatBal->rt.Percolation + WatBal->rt.Infiltration;
-    WatBal->rt.MoistureLOW = WatBal->rt.Percolation - WatBal->rt.Loss;             
+    WatBal->rt.MoistureLOW = WatBal->rt.Percolation - WatBal->rt.Loss;  
+    
 }
 
 
@@ -229,7 +233,15 @@ void IntegrationWatBal()
     WatBal->st.Rain += Rain[Lon][Lat][Day];
     WatBal->st.Infiltration += WatBal->rt.Infiltration;
     WatBal->st.Irrigation   += WatBal->rt.Irrigation;
-    
+
+    WatBal->st.PreSurplus = WatBal->rt.Irrigation + Rain[Lon][Lat][Day] - WatBal->rt.EvapWater - WatBal->rt.EvapSoil - WatBal->rt.Transpiration;
+    if (Crop->Sowing > 1.0 && Crop->Emergence == 1.0){
+        WatBal->st.TSMD = max(min(WatBal->st.TSMD,0), MaxTSMD) +  WatBal->st.PreSurplus;     // Vegetated soil  
+    } else{
+        WatBal->st.TSMD = max(min(WatBal->st.TSMD,0), MaxTSMD/1.8) +  WatBal->st.PreSurplus; // Bare soil
+    }
+
+
     /* Surface storage and runoff */
     PreSurfaceStorage = WatBal->st.SurfaceStorage + (Rain[Lon][Lat][Day] + 
             WatBal->rt.Irrigation - WatBal->rt.EvapWater - 

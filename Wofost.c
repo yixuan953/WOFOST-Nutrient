@@ -74,6 +74,8 @@ int main(int argc, char **argv)
     GetFertInput(fertlist);
     GetIrriInput(irrilist);
 
+    Grid->npc = (NPCycling *)malloc(sizeof(NPCycling)); // Allocate memory space for NPCycling variables
+
     /* Allocate memory for the file pointers */      /* 为文件指针分配内存 */
     files_DO = malloc(sizeof(**files_DO) * NumberOfFiles); // 分配足够存储NumberOfFiles个FILE指针的内存
     files_AO = malloc(sizeof(**files_AO) * NumberOfFiles); // 分配足够存储NumberOfFiles个FILE指针的内存
@@ -216,6 +218,9 @@ int main(int argc, char **argv)
                     }
                 }
 
+                // Calculate the maximum TSMD
+                CalMaxTSMD();
+
                 // Go back to the beginning of the list and rest grid value flag,and twso and length
                 Grid = initial;
               
@@ -262,6 +267,7 @@ int main(int argc, char **argv)
                         WatBal = Grid->soil;
                         Mng = Grid->mng;
                         Site = Grid->ste;
+                        NPC = Grid->npc;
 
                         Emergence = Grid->emergence; /* Start simulation at sowing or emergence */
 
@@ -292,6 +298,7 @@ int main(int argc, char **argv)
                                 CalcPenmanMonteith();
                                 RateCalulationWatBal(); 
                                 IntegrationWatBal();
+                                CalDecomp();
                                 //printf("%4d,%3d,%4.2f,%4.2f,%4.2f,%4.2f\n",MeteoYear[Day],Day,WatBal->st.SurfaceStorage,WatBal->rt.Infiltration,WatBal->st.Moisture,WatBal->st.MoistureLOW); //Check if the soil moisture could be updated
                             }
 
@@ -340,9 +347,6 @@ int main(int argc, char **argv)
                                     /* Rate calculations */ 
                                     RateCalulationWatBal(); // Here the water balance is calculated considering the input of irrigation
 
-                                    /* Add TSMD and SOC, SON, SOP decomposition calculation here*/
-
-
                                     /* Update the soil P pool here considering P decomposition and deposition*/
 
                                     Partioning();
@@ -355,7 +359,10 @@ int main(int argc, char **argv)
                                     /* State calculations */ /* 状态计算 */
                                     IntegrationCrop();
                                     IntegrationWatBal();
-                                    IntegrationNutrients(); 
+                                    IntegrationNutrients();
+
+                                    /* Add TSMD and SOC, SON, SOP decomposition calculation here*/
+                                    CalDecomp();
 
                                     // Here:
                                     // 1. N_avail = N_apply *(1 - EF - L_surface - hum) + N_decomposition + N_deposition
@@ -412,6 +419,7 @@ int main(int argc, char **argv)
                         Grid->soil = WatBal;
                         Grid->mng = Mng;
                         Grid->ste = Site;
+                        Grid->npc = NPC;
                         Grid = Grid->next;
                     }
                 }

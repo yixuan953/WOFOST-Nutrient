@@ -201,6 +201,8 @@ typedef struct STATES {
         float SurfaceStorage;
         float Transpiration;
         float WaterRootExt;
+        float PreSurplus;
+        float TSMD;
         } States;
         
 
@@ -405,23 +407,24 @@ typedef struct FIELD {
         } Field;
 Field *Site; /* Place holder for the current site simulations */
 
-// typedef struct NP_CYCLING {
-//         /* Related parameters */
-//         float HumificationRate;
-        
-//         /* Related states and rates */
-//         float st_TSMD;
-//         float st_N_Avail;
-//         float st_P_Avail;
+/* Define dthe NP_cycling related structures*/
 
-//         float rt_SOC_decomp;
-//         float rt_SON_decomp;
-//         float rt_SOP_decomp;
+typedef struct DECOMPOSITION_RATE {
+        float SOC_decomp;
+        float SON_decomp;
+        float SOP_decomp;
+        } decomposition_rates; 
+
+typedef struct NP_CYCLING {
+        /* Related parameters */
         
-//         /** Table related to N, P cycling **/
+        /* Related states and rates */
+        decomposition_rates decomp_rt;    
+ 
+        /** Table related to N, P cycling **/
         
-//         } NPCycling;
-// NPCycling *NPC; 
+        } NPCycling;
+NPCycling *NPC; 
 
 
 /* Place holder for a simulation unit */
@@ -430,7 +433,8 @@ typedef struct SIMUNIT {
         Field *ste;
         Management *mng;
         Soil  *soil;
-        // NPCycling *npc;
+        NPCycling *npc;
+
         int emergence;
         int file_DO;
         int file_AO;
