@@ -21,7 +21,8 @@
 
 void CalMaxTSMD() {
     TopsoilDepth = 30.0;
-    MaxTSMD = -((20.0 + 1.3 * clay_content[Lon][Lat] - 0.01 * clay_content[Lon][Lat] * clay_content[Lon][Lat]) * TopsoilDepth) / 23.;
+    MaxTSMD = -((20.0 + 1.3 * clay_content[Lon][Lat] - 0.01 * clay_content[Lon][Lat] * clay_content[Lon][Lat]) * TopsoilDepth) / 23.; // Unit: mm
+    MaxTSMD = 0.1 * MaxTSMD; //Unit: cm (to match the further calculations) 
 }
 
 /*---------------------------------------------------*/

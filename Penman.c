@@ -97,8 +97,8 @@ void CalcPenman()
     /* Convert to cm/day                    */
     Penman.E0  = max(0., 0.1 * (delta*Rnw + Gamma*Ea)/(delta + Gamma));
     Penman.ES0 = max(0., 0.1 * (delta*Rns + Gamma*Ea)/(delta + Gamma));
-    //Penman.ET0 = max(0., 0.1 * (delta*Rnc + Gamma*Eac)/(delta + Gamma));
-    
+    // //Penman.ET0 = max(0., 0.1 * (delta*Rnc + Gamma*Eac)/(delta + Gamma));
+
 }
 
 void CalcPenmanMonteith()
@@ -180,8 +180,8 @@ void CalcPenmanMonteith()
         // Reference ET0 in mm/day
         ET0 = (Delta * (Rn - G))/(Delta + MGamma) + (Gamma * EA)/(Delta + MGamma);
         
-        // Convert to cm/day;
-        Penman.ET0 = max(0., 0.1 * ET0);
+        // Convert to cm/day [0.1*ET0];
+        Penman.ET0 = max(0., 0.1*ET0);
     }
     else
     {

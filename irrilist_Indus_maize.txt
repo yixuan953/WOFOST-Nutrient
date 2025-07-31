@@ -1,0 +1,2 @@
+/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Irrigation/Indus/ 1981 2016 10 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Indus/Indus_maize_mask.nc
+Indus_maize_monthly_Irri_Rate.nc  IRRIRATE Irrigation_Rate

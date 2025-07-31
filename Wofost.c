@@ -296,6 +296,7 @@ int main(int argc, char **argv)
                                 Astro();
                                 CalcPenman();
                                 CalcPenmanMonteith();
+                                EvapTra(); 
                                 RateCalulationWatBal(); 
                                 IntegrationWatBal();
                                 CalDecomp();

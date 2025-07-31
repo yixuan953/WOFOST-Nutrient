@@ -790,7 +790,7 @@ int GetMeteoData(Weather* meteo)
                 Tmin[j][k][l] = roundz(Tmin[j][k][l], 1); // [degree C]
                 Tmax[j][k][l] = roundz(Tmax[j][k][l], 1); // [degree C]
                 Radiation[j][k][l]  = 1000 * roundz(Radiation[j][k][l], 1); // from KJ/m2 to J/m2/day
-                Rain[j][k][l] = roundz(Rain[j][k][l], 2); // [mm day-1]
+                Rain[j][k][l] = roundz(0.1 * Rain[j][k][l], 2); // [cm day-1]
                 Windspeed[j][k][l] = roundz(Windspeed[j][k][l], 1); // [m/s]
                 Vapour[j][k][l] = roundz(Vapour[j][k][l], 1); // [kPa]
                 N_total_dep[j][k][l] = roundz(N_total_dep[j][k][l], 2); // [kgN/ha]

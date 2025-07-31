@@ -27,6 +27,7 @@ void InitializeWatBal()
     
     /* Check initial soil moisture. It cannot be larger than the              */
     /* saturated soil moisture SoilMoistureSAT or smaller than SoilMoistureWP */
+    /* Unit: [-]*/
     if (Site->MaxInitSoilM < WatBal->ct.MoistureWP)  
             Site->MaxInitSoilM = WatBal->ct.MoistureWP;
     if (Site->MaxInitSoilM > WatBal->ct.MoistureSAT) 
@@ -35,7 +36,7 @@ void InitializeWatBal()
     /* Set initial surface storage */
     WatBal->st.SurfaceStorage = Site->SurfaceStorage;
     
-    /* Initial soil moisture for a rice crop */
+    /* Initial soil moisture for a rice crop, unit: -*/
     if (Crop->prm.Airducts) Site->MaxInitSoilM = WatBal->ct.MoistureSAT; 
     
     if(Crop->Sowing == 0){
@@ -47,7 +48,7 @@ void InitializeWatBal()
     }
 
     
-    /* Initial moisture amount in rootable zone */
+    /* Initial moisture amount in rootable zone, unit: cm */
     if(Crop->Sowing == 0){
        WatBal->st.RootZoneMoisture = WatBal->st.Moisture * AssRootDepth;
     } else{
@@ -60,7 +61,7 @@ void InitializeWatBal()
             0.5 * (WatBal->ct.MoistureFC - WatBal->ct.MoistureWP))) 
             WatBal->DaysSinceLastRain = 5.;
     
-    /* Moisture amount between rooted zone and max.rooting depth */
+    /* Moisture amount between rooted zone and max.rooting depth, unit: cm  */
     if (Crop->Sowing == 0){
         WatBal->st.MoistureLOW  = limit (0., WatBal->ct.MoistureSAT
                 *(Crop->prm.MaxRootingDepth - AssRootDepth), 
@@ -117,7 +118,7 @@ void RateCalulationWatBal() {
     /* How irrigation rate was filld before */
     // WatBal->rt.Irrigation = List(Mng->Irrigation);
     
-    /* If surface storage > 1 cm */
+    /* If surface storage > 1 cm  */
     if (WatBal->st.SurfaceStorage > 1.) 
     {
         WatBal->rt.EvapWater = Evtra.MaxEvapWater;
@@ -146,10 +147,10 @@ void RateCalulationWatBal() {
         /* Without surface storage */
         if (Site->InfRainDependent) WatBal->rt.Infiltration = 
                (1. - Site->NotInfiltrating * Afgen(Site->NotInfTB, &Rain[Lon][Lat][Day])) * 
-               Rain[Lon][Lat][Day] + WatBal->rt.Irrigation + WatBal->st.SurfaceStorage / Step;
+               Rain[Lon][Lat][Day] + WatBal->rt.Irrigation + WatBal->st.SurfaceStorage/ Step;
         else
             RINPRE = (1. - Site->NotInfiltrating) * Rain[Lon][Lat][Day] + 
-                WatBal->rt.Irrigation + WatBal->st.SurfaceStorage / Step;
+                WatBal->rt.Irrigation + WatBal->st.SurfaceStorage/ Step;
     }
     else 
     {
