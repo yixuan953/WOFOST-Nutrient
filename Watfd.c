@@ -249,6 +249,8 @@ void IntegrationWatBal()
     float PreSurfaceStorage;
     float WaterRootExt;
     float AssRootDepth = 10.;
+    float BundHeight = 15.;
+    float DrainageHeight = 1.5;
     
     WatBal->st.Transpiration += WatBal->rt.Transpiration;
     WatBal->st.EvapWater     += WatBal->rt.EvapWater;
@@ -270,9 +272,22 @@ void IntegrationWatBal()
     PreSurfaceStorage = WatBal->st.SurfaceStorage + (Rain[Lon][Lat][Day] + 
             WatBal->rt.Irrigation - WatBal->rt.EvapWater - 
             WatBal->rt.Infiltration) * Step;
-    WatBal->st.SurfaceStorage = min(PreSurfaceStorage, 
-            Site->MaxSurfaceStorage);
-            
+
+    /* For rice, the MaxSurface Storage would change during the growing period*/
+    if (Crop->prm.Airducts){
+        if (Crop->st.Development < 0.01 || (Crop->st.Development > 0.49 && Crop->st.Development < 0.72) || Crop->st.Development > 1.6){
+            Site->MaxSurfaceStorage = DrainageHeight;
+            // The rice field is drained:
+            // 1: When fertilizers are applied in the field before transplanting (Crop->Sowing == 0)
+            // 2: In the end of tillering and before flowering (0.49 < DVS < 0.72)
+            // 3: Before harvest (DVC > 1.8)
+        } else{
+            Site->MaxSurfaceStorage = BundHeight;
+        }
+    } 
+    
+    WatBal->st.SurfaceStorage = min(PreSurfaceStorage, Site->MaxSurfaceStorage);   
+
     WatBal->rt.Runoff = PreSurfaceStorage - WatBal->st.SurfaceStorage;
     WatBal->st.Runoff += WatBal->rt.Runoff;
     
