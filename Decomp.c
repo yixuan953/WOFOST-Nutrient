@@ -7,9 +7,6 @@
 #include "wofost.h"
 #include "npcycling.h"
 
-
-
-
 /*-----------------------------------------------------------*/
 /* function CalMaxTSMD                                       */
 /* Purpose: Calculate the maximum topsoil mositure deficit   */
@@ -22,7 +19,6 @@
 void CalMaxTSMD() {
     TopsoilDepth = 30.0;
     MaxTSMD = -((20.0 + 1.3 * clay_content[Lon][Lat] - 0.01 * clay_content[Lon][Lat] * clay_content[Lon][Lat]) * TopsoilDepth) / 23.; // Unit: mm
-    MaxTSMD = 0.1 * MaxTSMD; //Unit: cm (to match the further calculations) 
 }
 
 /*---------------------------------------------------*/
@@ -39,10 +35,12 @@ void CalDecomp() {
     float m_temp;        // Modification factor for temperature
     float m_moisture;    // Modification factor for soil moisture
     float m_cover;       // Modification factor for soil cover
+    float k_rate = 0.02; // Decomposition rate [kg/ha per year]
      
     m_temp = 47.91 / (1.0 + exp(106.06 / (DayTemp + 18.27)));
 
-    AccTSMD = max(min(WatBal->st.TSMD,0), MaxTSMD);
+    AccTSMD = max(min(WatBal->st.TSMD * 0.1, 0), MaxTSMD); // Then the units of both TSMD and MaxTSMD are 
+
     if (AccTSMD > 0.444 * MaxTSMD){
         m_moisture = 1.0;
     } else{
@@ -56,7 +54,7 @@ void CalDecomp() {
     }
     
     /* Calculate the decomposition rate */
-    NPC->decomp_rt.SOC_decomp = (bulk_density[Lon][Lat] * TopsoilDepth * SOC[Lon][Lat] * 1000)/365; // "/365" As the function is developed for annual decomposition
+    NPC->decomp_rt.SOC_decomp = m_temp * m_cover * m_moisture * (bulk_density[Lon][Lat] * TopsoilDepth * SOC[Lon][Lat] * 1000) * k_rate/365; // "/365" As the function is developed for annual decomposition
     NPC->decomp_rt.SON_decomp = NPC->decomp_rt.SOC_decomp * NC_ratio[Lon][Lat];
     NPC->decomp_rt.SOP_decomp = NPC->decomp_rt.SOC_decomp * PC_ratio[Lon][Lat];
 

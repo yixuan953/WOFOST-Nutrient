@@ -349,9 +349,11 @@ int main(int argc, char **argv)
                                     RateCalulationWatBal(); // Here the water balance is calculated considering the input of irrigation
 
                                     /* Update the soil P pool here considering P decomposition and deposition*/
+                                    /* Add TSMD and SOC, SON, SOP decomposition calculation here*/
+                                    CalDecomp();
 
                                     Partioning();
-                                    RateCalcultionNutrients();
+                                    RateCalcultionNutrients(); // To calculate the nutrient availability, stress index, and uptake
                                     RateCalculationCrop();
 
                                     /* Calculate LAI */ /* 计算LAI */
@@ -362,11 +364,7 @@ int main(int argc, char **argv)
                                     IntegrationWatBal();
                                     IntegrationNutrients();
 
-                                    /* Add TSMD and SOC, SON, SOP decomposition calculation here*/
-                                    CalDecomp();
 
-                                    // Here:
-                                    // 1. N_avail = N_apply *(1 - EF - L_surface - hum) + N_decomposition + N_deposition
                                     // 2. N_surplus = N_avail - (N_uptake - + N_decomposition + N_deposition)  
                                     
                                     /* Update the soil P pool */

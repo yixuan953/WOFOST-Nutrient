@@ -89,9 +89,11 @@ void RateCalcultionNutrients()
     
     NutrientLoss();
     
-    SoilNutrientRates();
+    SoilNutrientRates(); // Available Site->rt_N_tot
+
+    CalNutriAvail();
     
-    NutrientPartioning();
+    NutrientPartioning(); 
     
     NutrientTranslocation();
     

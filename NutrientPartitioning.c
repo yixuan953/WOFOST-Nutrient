@@ -34,8 +34,12 @@ void NutrientPartioning()
     N_Fix_rt = (max(0., Crop->prm.N_fixation * Total_N_demand) * NutrientLimit);
     
     /* Nutrient uptake cannot be larger than the availability and is larger or equal to zero */
-    Crop->N_rt.Uptake = max(0.,min(Total_N_demand - N_Fix_rt, (Site->st_N_tot + Site->rt_N_mins))) * NutrientLimit/Step;
-    Crop->P_rt.Uptake = max(0.,min(Total_P_demand, (Site->st_P_tot + Site->rt_P_mins)))* NutrientLimit/Step;
+    
+    Crop->N_rt.Uptake = max(0.,min(Total_N_demand - N_Fix_rt, NPC->st_N_avail)) * NutrientLimit/Step;
+    Crop->P_rt.Uptake = max(0.,min(Total_P_demand, NPC->st_P_avail))* NutrientLimit/Step;
+    // I use the N, P availability above to replace the availability calculated based on the management file
+    // Crop->N_rt.Uptake = max(0.,min(Total_N_demand - N_Fix_rt, (Site->st_N_tot + Site->rt_N_mins))) * NutrientLimit/Step;
+    // Crop->P_rt.Uptake = max(0.,min(Total_P_demand, (Site->st_P_tot + Site->rt_P_mins)))* NutrientLimit/Step;
     Crop->K_rt.Uptake = max(0.,min(Total_K_demand, (Site->st_K_tot + Site->rt_K_mins)))* NutrientLimit/Step;
 
     /* N uptake per crop organ kg ha-1 d-1*/

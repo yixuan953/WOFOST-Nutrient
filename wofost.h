@@ -419,10 +419,13 @@ typedef struct NP_CYCLING {
         /* Related parameters */
         
         /* Related states and rates */
-        decomposition_rates decomp_rt;    
- 
-        /** Table related to N, P cycling **/
+        decomposition_rates decomp_rt;
         
+        /* Other variables */
+        float st_N_avail;
+        float st_P_avail;
+ 
+        /* Table related to N, P cycling */    
         } NPCycling;
 NPCycling *NPC; 
 

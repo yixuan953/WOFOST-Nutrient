@@ -280,7 +280,7 @@ void IntegrationWatBal()
             // The rice field is drained:
             // 1: When fertilizers are applied in the field before transplanting (Crop->Sowing == 0)
             // 2: In the end of tillering and before flowering (0.49 < DVS < 0.72)
-            // 3: Before harvest (DVC > 1.8)
+            // 3: Before harvest (DVC > 1.6)
         } else{
             Site->MaxSurfaceStorage = BundHeight;
         }
