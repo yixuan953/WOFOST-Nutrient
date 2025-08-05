@@ -415,15 +415,41 @@ typedef struct DECOMPOSITION_RATE {
         float SOP_decomp;
         } decomposition_rates; 
 
+typedef struct P_RATE {
+        float PrecP_S; // Changes due to the stable P pool
+        float PrecP_L; // Changes due to the labile P pool
+        float PdisS;
+        float PdisS_corr;
+        float PdisL;
+        float PdisL_corr;
+        float PLeaching;
+        float PSurfRunoff;
+        float PSubRunoff;
+        } p_rates; 
+
+typedef struct P_STATE {
+        float LabileP;
+        float StableP;
+        float PrecP;
+        float cP_inorg;  // g/m3 = mg/L
+        float cP_tot;    // g/m3 = mg/L
+        } p_states; 
+
 typedef struct NP_CYCLING {
         /* Related parameters */
         
         /* Related states and rates */
-        decomposition_rates decomp_rt;
+        decomposition_rates decomp_rt;   // Decomposition
+        p_rates p_rt;           // Soil P pool: [mmol P / kg soil]
+        p_states p_st;          // Soil P pool: [mmol P / kg soil]
+        
+        float P_fert_input;
+        float N_fert_input;
         
         /* Other variables */
-        float st_N_avail;
-        float st_P_avail;
+        float st_N_avail;       // kg N/ha
+        float st_P_avail;       // kg P/ha
+
  
         /* Table related to N, P cycling */    
         } NPCycling;

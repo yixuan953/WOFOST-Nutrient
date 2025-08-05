@@ -275,13 +275,15 @@ int main(int argc, char **argv)
                         DayTemp = 0.5 * (Tmax[Lon][Lat][Day] + Temp);
 
                         if (Day <=1){
-                        
-                            /* Initialize soil mositure condition here */
-                            InitializeWatBal(); // Initialize it only on the first day
+
+                            CalSoilTexturePara();   // Calculate N, P cycling related parameters
+
+                            CalMaxPPoolSize();     // Maximum P pool sizes for labile and stable P pool [mmol/kg]
+                            CalMaxTSMD();           // Daily topsoil mositure deficit [mm]
+
+                            InitializeWatBal();    // Initialize it only on the first day
+                            InitializeSoilPPool(); // Initialize the soil P pool
                             RatesToZero();
-
-                            /* Initialize soil P pools */
-
                         }
 
                         /* Only simulate between start and end year */ 
@@ -300,24 +302,14 @@ int main(int argc, char **argv)
                                 RateCalulationWatBal(); 
                                 IntegrationWatBal();
                                 CalDecomp();
+                                CalPConcentration();
+                                CalPPoolDynamics();
                                 //printf("%4d,%3d,%4.2f,%4.2f,%4.2f,%4.2f\n",MeteoYear[Day],Day,WatBal->st.SurfaceStorage,WatBal->rt.Infiltration,WatBal->st.Moisture,WatBal->st.MoistureLOW); //Check if the soil moisture could be updated
                             }
 
                             /* If sowing has occurred than determine the emergence */ /* 如果播种已经发生，则确定出苗 */
                             if (Crop->Sowing >= 1 && Crop->Emergence == 0)
                             {
-
-                                 /* Add fertilization input function here*/
-                                 // 1. Initialize N input every year: Residue from last year, Organic, Inorganic
-                                 // 2. Add P input every year: Residue from last year, organic, inorganic
-
-
-                                 /* Add N losses calculation function here*/
-                                 // After N is input, we assume the gaseous emission (N_apply * EF) and surface runoff (N_apply * L_surface), and humification (N_hum) will happen immediatly
-
-                                  
-                                 /* Update the soil P pool here considering the P fertilizer input */
-                                 // After P is input, we assume part of the organic P cannot be directly used. The rest will supply the soil P pool
 
                                 if (EmergenceCrop(Emergence)) // Check if the emergence can happen or not
                                 {
@@ -346,11 +338,11 @@ int main(int argc, char **argv)
                                     RatesToZero(); // It includes the rate in terms of crop, site, and WatBal
 
                                     /* Rate calculations */ 
-                                    RateCalulationWatBal(); // Here the water balance is calculated considering the input of irrigation
+                                    RateCalulationWatBal();    // Here the water balance is calculated considering the input of irrigation
 
-                                    /* Update the soil P pool here considering P decomposition and deposition*/
-                                    /* Add TSMD and SOC, SON, SOP decomposition calculation here*/
-                                    CalDecomp();
+                                    /* Calculate the nutrient avaliability and crop uptakes*/
+                                    CalPConcentration();
+                                    CalNutriAvail();           // Calculate the nutrients availability: NEW!
 
                                     Partioning();
                                     RateCalcultionNutrients(); // To calculate the nutrient availability, stress index, and uptake
@@ -363,13 +355,10 @@ int main(int argc, char **argv)
                                     IntegrationCrop();
                                     IntegrationWatBal();
                                     IntegrationNutrients();
-
-
-                                    // 2. N_surplus = N_avail - (N_uptake - + N_decomposition + N_deposition)  
                                     
-                                    /* Update the soil P pool */
-                                    // Considering the daily crop uptake, surface runoff, subsurface runoff, leaching.
-
+                                    /* Update the soil P pools and calculate the SOM decomposition using the water balance of the current day*/
+                                    CalDecomp();
+                                    CalPPoolDynamics();
 
                                     /* Daily scale results */ /* 状态计算 */
                                     // Output_Daily(files_DO[Grid->file_DO]);

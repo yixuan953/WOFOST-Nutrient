@@ -98,9 +98,31 @@ extern void IntegrationWatBal();    // 水分平衡积分函数
 extern void EvapTra();              // 蒸发和蒸腾计算函数
 
 /* N, P cycling*/
+// Initialize
 extern void CalMaxTSMD();           // Daily topsoil mositure deficit [mm]
+extern void CalSoilTexturePara();   // Calculate N, P cycling related parameters
+extern void CalMaxPPoolSize();      // Maximum P pool sizes for labile and stable P pool [mmol/kg]
+extern void InitializeSoilPPool();  // Initilize Soil P pool [mmol/kg]
+
+// Soil decomposition
 extern void CalDecomp();            // Daily decomposition of SOC,SON, and SOP [kg/ha] 
 
-extern void CalNutriAvail();        // Daily N, P availability for crop uptake [kg/ha]
+// Soil N, P availability for crop uptakes
+extern void CalPConcentration();    // Calculate the P concentration in the soil solution [g/m3]
+extern void CalNutriAvail();        // Daily N, P availability for crop uptakes [kg/ha]
+
+// Soil P dynamics
+extern void CalPPoolDynamics();
+extern void CalPSurfRunoff();
+extern void CalPSubRunoff();
+extern void CalPLeaching();
+extern void CalPdisS();             // Calculate the daily P exchange from the soil solution to the stable pool [mmol kg-1 d-1]
+extern void CalPdisL();             // Calculate the daily P exchange from the labile P pool to the soil solution [mmol kg-1 d-1]
+extern void CalPrecipChangeS();     // Calculate the changes of the precipitation P pool due to exachanges between the stable and precipitation pool [mmol kg-1 d-1]
+extern void CorrectPdisL();         // Correct PdisL according to the changes of precipitation pool [mmol kg-1 d-1]
+extern void CalPrecipChangeL();     // Calculate the changes of the precipitation P pool due to exachanges between the labile and precipitation pool [mmol kg-1 d-1]
+extern void UpdateStableP();
+extern void UpdatePrecipP();
+extern void UpdateLabileP();
 
 #endif // EXTERN_H

@@ -89,11 +89,11 @@ void RateCalcultionNutrients()
     
     NutrientLoss();
     
-    SoilNutrientRates(); // Available Site->rt_N_tot
+    SoilNutrientRates();  // Available Site->rt_N_tot (The old code)
 
-    CalNutriAvail();
+    CalNutriAvail();      // The new code to calculate the availability
     
-    NutrientPartioning(); 
+    NutrientPartioning(); // The crop uptake limited by availability is calculated here
     
     NutrientTranslocation();
     
