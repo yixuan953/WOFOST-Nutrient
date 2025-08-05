@@ -6,15 +6,18 @@
 
 void header_DO(FILE *fp_do)
 {
-    fprintf(fp_do,"Lat,Lon,Year,Day,Dev_Stage,Transpiration,EvaWater,EvaSoil,SoilMoisture,SurfaceRunoff,SubsurfaceRunoff,Percolation,N_demand,P_demand\n");
+    fprintf(fp_do,"Lat,Lon,Year,Day,Dev_Stage,Transpiration,EvaWater,EvaSoil,SoilMoisture,SurfaceRunoff,SubsurfaceRunoff,Percolation,N_demand,P_demand, N_Uptake, P_Uptake, Lpool, Spool, Prepool,P_avail,\n");
 }
 
 void Output_Daily(FILE *fp_do)
 {      
-         fprintf(fp_do,"%7.2f,%7.2f,%4d,%3d," // Lat, Lon, MeteoYear, MeteoDay
-                "%4.2f," // Crop stage, Crop tsum
+         fprintf(fp_do,"%7.2f,%7.2f,%4f,%3d," // Lat, Lon, MeteoYear, MeteoDay
+                "%4.2d," // Crop stage
                 "%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f," // Water demand
-                "%4.2f,%4.2f\n", //N,P demand
+                "%4.2f,%4.2f",   //N,P demand
+                "%4.2f,%4.2f,"   //N,P uptake
+                "%4.2f,%4.2f,%4.2f,%4.2f,"  //Soil P pools
+                "%4.2f,%4.2f,%4.2f\n",  //P losses
                 Latitude[Lat],
                 Longitude[Lon],
                 MeteoYear[Day],
@@ -29,5 +32,14 @@ void Output_Daily(FILE *fp_do)
                 WatBal->rt.Loss,
                 WatBal->rt.Percolation,
                 Crop->N_rt.Demand_lv + Crop->N_rt.Demand_st + Crop->N_rt.Demand_ro,
-                Crop->P_rt.Demand_lv + Crop->P_rt.Demand_st + Crop->P_rt.Demand_ro);
+                Crop->P_rt.Demand_lv + Crop->P_rt.Demand_st + Crop->P_rt.Demand_ro,
+                Crop->N_rt.Uptake,
+                Crop->P_rt.Uptake,
+                NPC->p_st.LabileP,
+                NPC->p_st.StableP,
+                NPC->p_st.PrecP,
+                NPC->st_P_avail,
+                NPC->p_rt.PSurfRunoff,
+                NPC->p_rt.PSubRunoff,
+                NPC->p_rt.PLeaching);
 }

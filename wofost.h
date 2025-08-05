@@ -436,7 +436,9 @@ typedef struct P_STATE {
         } p_states; 
 
 typedef struct NP_CYCLING {
+        
         /* Related parameters */
+        int Fertilization;
         
         /* Related states and rates */
         decomposition_rates decomp_rt;   // Decomposition
@@ -449,7 +451,6 @@ typedef struct NP_CYCLING {
         /* Other variables */
         float st_N_avail;       // kg N/ha
         float st_P_avail;       // kg P/ha
-
  
         /* Table related to N, P cycling */    
         } NPCycling;

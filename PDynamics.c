@@ -101,7 +101,7 @@ void CalPdisS()
   }  
   
   // Correct the NPC->p_rt.PdisS
-  if (NPC->p_rt.PdisS < 0 && NPC->p_st.PrecP < abs(NPC->p_rt.PdisS))
+  if (NPC->p_rt.PdisS < 0 && NPC->p_st.PrecP < fabsf(NPC->p_rt.PdisS))
   {
     NPC->p_rt.PdisS_corr = NPC->p_rt.PdisS + NPC->p_rt.PdisS;
   } else
@@ -124,12 +124,10 @@ void CalPdisL()
    
    if (Crop->Sowing <1) // When the crop is now sowed or transplanted, there is no crop uptake
    {
-    Pacc = P_total_dep[Lon][Lat][Day] - NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
-    // Pacc = NPC->P_fert_input + P_total_dep[Lon][Lat][Day] - NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
+    Pacc = NPC->P_fert_input + P_total_dep[Lon][Lat][Day] - NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
    } else 
    {
-    Pacc = P_total_dep[Lon][Lat][Day] - Crop->N_rt.Uptake - NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
-    // Pacc = NPC->P_fert_input + P_total_dep[Lon][Lat][Day] - Crop->N_rt.Uptake - NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
+    Pacc = NPC->P_fert_input + P_total_dep[Lon][Lat][Day] - Crop->N_rt.Uptake - NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
    }
    
    NPC->p_rt.PdisL = (100 * Pacc/(MolarMassP * TopsoilDepth * bulk_density[Lon][Lat])) - NPC->p_rt.PdisS; // Unit: [mmol P/kg soil]
@@ -147,7 +145,7 @@ void CalPrecipChangeS()
   if (NPC->p_rt.PdisS < 0.0)        // Stable P pool is supplied by the precipitation P pool
   {
     //When the precipitation P pool is not enough to supply the stable P pool
-    if (NPC->p_st.PrecP < abs(NPC->p_rt.PrecP_S))
+    if (NPC->p_st.PrecP < fabsf(NPC->p_rt.PrecP_S))
     {
       NPC->p_rt.PrecP_S = -NPC->p_st.PrecP; 
     } else 
@@ -180,7 +178,7 @@ void CorrectPdisL()
   if (NPC->p_rt.PdisL < 0)  
   {
     // When the precipitation pool does not have enough P to suuply the labile P pool
-    if ((NPC->p_st.PrecP + NPC->p_rt.PrecP_S) < abs(NPC->p_rt.PdisL))
+    if ((NPC->p_st.PrecP + NPC->p_rt.PrecP_S) < fabsf(NPC->p_rt.PdisL))
     {
       NPC->p_rt.PdisL_corr = NPC->p_rt.PdisL + NPC->p_st.PrecP + NPC->p_rt.PrecP_S;
     } 
@@ -216,7 +214,7 @@ void CalPrecipChangeL()
     else if ((NPC->p_rt.PdisL + NPC->p_st.LabileP) < MinLabileP)
     {
       // If the lacking amount is lower than the current precipitation P pool
-      if ((abs(NPC->p_st.LabileP + NPC->p_rt.PdisL - MinLabileP))<(NPC->p_st.PrecP + NPC->p_rt.PrecP_S))
+      if ((fabsf(NPC->p_st.LabileP + NPC->p_rt.PdisL - MinLabileP))<(NPC->p_st.PrecP + NPC->p_rt.PrecP_S))
       {
         NPC->p_rt.PrecP_L = NPC->p_st.PrecP + NPC->p_rt.PrecP_S - MinLabileP;
       } else 
@@ -235,7 +233,7 @@ void CalPrecipChangeL()
   else if (NPC->p_rt.PdisL < 0)
   {
     // The preicpitation pool is not enough to supply the P transfer from the labile pool to the soil solution
-    if ((NPC->p_st.PrecP + NPC->p_rt.PrecP_S) < abs(NPC->p_rt.PdisL))
+    if ((NPC->p_st.PrecP + NPC->p_rt.PrecP_S) < fabsf(NPC->p_rt.PdisL))
     {
       NPC->p_rt.PrecP_L = -(NPC->p_st.PrecP + NPC->p_rt.PrecP_S);
     }

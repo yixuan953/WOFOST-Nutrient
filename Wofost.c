@@ -291,7 +291,9 @@ int main(int argc, char **argv)
                         {
                                                         
                             /* Determine if the sowing already has occurred */
-                            IfSowing(Grid->start); // To transform date format from "MM-DD" to 
+                            IfFertilization(Grid->start);
+                            IfSowing(Grid->start);
+                            GetPFertInput();
 
                             if(Crop->Sowing <1 || Crop->Emergence == 0)
                             {
@@ -320,8 +322,6 @@ int main(int argc, char **argv)
 
                                 }
                             }
-
-                            
 
                             if (Crop->Sowing >= 1 && Crop->Emergence == 1)
                             {

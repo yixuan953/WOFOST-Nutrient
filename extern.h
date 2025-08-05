@@ -98,11 +98,16 @@ extern void IntegrationWatBal();    // 水分平衡积分函数
 extern void EvapTra();              // 蒸发和蒸腾计算函数
 
 /* N, P cycling*/
+
 // Initialize
 extern void CalMaxTSMD();           // Daily topsoil mositure deficit [mm]
 extern void CalSoilTexturePara();   // Calculate N, P cycling related parameters
 extern void CalMaxPPoolSize();      // Maximum P pool sizes for labile and stable P pool [mmol/kg]
 extern void InitializeSoilPPool();  // Initilize Soil P pool [mmol/kg]
+
+// Fertilizer inputs
+extern void IfFertilization();      // If fertilization is applied
+extern void GetPFertInput();        // Get the P fertilizer input
 
 // Soil decomposition
 extern void CalDecomp();            // Daily decomposition of SOC,SON, and SOP [kg/ha] 
