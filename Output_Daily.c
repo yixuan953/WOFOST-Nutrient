@@ -6,15 +6,15 @@
 
 void header_DO(FILE *fp_do)
 {
-    fprintf(fp_do,"Lat,Lon,Year,Day,Dev_Stage,Transpiration,EvaWater,EvaSoil,SoilMoisture,SurfaceRunoff,SubsurfaceRunoff,Percolation,N_demand,P_demand, N_Uptake, P_Uptake, Lpool, Spool, Prepool,P_avail,\n");
+    fprintf(fp_do,"Lat,Lon,Year,Day,Dev_Stage,Transpiration,EvaWater,EvaSoil,SoilMoisture,SurfaceRunoff,SubsurfaceRunoff,Percolation,N_demand,P_demand,N_Uptake,P_Uptake,Lpool,Spool,Prepool,P_avail,P_Surf,P_Sub,P_Leaching\n");
 }
 
 void Output_Daily(FILE *fp_do)
 {      
-         fprintf(fp_do,"%7.2f,%7.2f,%4f,%3d," // Lat, Lon, MeteoYear, MeteoDay
-                "%4.2d," // Crop stage
+         fprintf(fp_do,"%7.2f,%7.2f,%4d,%3d," // Lat, Lon, MeteoYear, MeteoDay
+                "%4.2f," // Crop stage
                 "%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f," // Water demand
-                "%4.2f,%4.2f",   //N,P demand
+                "%4.2f,%4.2f,"   //N,P demand
                 "%4.2f,%4.2f,"   //N,P uptake
                 "%4.2f,%4.2f,%4.2f,%4.2f,"  //Soil P pools
                 "%4.2f,%4.2f,%4.2f\n",  //P losses

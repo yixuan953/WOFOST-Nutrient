@@ -275,12 +275,12 @@ void IntegrationWatBal()
 
     /* For rice, the MaxSurface Storage would change during the growing period*/
     if (Crop->prm.Airducts){
-        if (Crop->st.Development < 0.01 || (Crop->st.Development > 0.49 && Crop->st.Development < 0.72) || Crop->st.Development > 1.6){
+        if (Crop->st.Development < 0.01 || (Crop->st.Development > 0.49 && Crop->st.Development < 0.72) || Crop->st.Development > 1.5){
             Site->MaxSurfaceStorage = DrainageHeight;
             // The rice field is drained:
             // 1: When fertilizers are applied in the field before transplanting (Crop->Sowing == 0)
             // 2: In the end of tillering and before flowering (0.49 < DVS < 0.72)
-            // 3: Before harvest (DVC > 1.6)
+            // 3: Before harvest (DVC > 1.5), when rice leaves start to die
         } else{
             Site->MaxSurfaceStorage = BundHeight;
         }

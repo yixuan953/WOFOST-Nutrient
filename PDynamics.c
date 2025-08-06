@@ -49,8 +49,8 @@ void InitializeSoilPPool()
 /* --------------------------------------------------------------------------------------------*/
 void CalPConcentration()
 {
-  NPC->p_st.cP_inorg = 1000 * NPC->p_st.LabileP/(KL * (MaxLabileP - NPC->p_st.LabileP));
-  NPC->p_st.cP_tot = 1.1 * NPC->p_st.cP_inorg + 0.1 * exp(-NPC->p_st.cP_inorg);
+  NPC->p_st.cP_inorg = 1000 * NPC->p_st.LabileP/(KL * (MaxLabileP - NPC->p_st.LabileP)); // Unit of cP_tot = kg/m3
+  NPC->p_st.cP_tot = 1.1 * NPC->p_st.cP_inorg + 0.1 * exp(-NPC->p_st.cP_inorg); // Unit of cP_tot = g/m3
 }
 
 /* ---------------------------------------------------------------------------------------*/
@@ -59,7 +59,7 @@ void CalPConcentration()
 /* ---------------------------------------------------------------------------------------*/
 void CalPLeaching()
 {
-  NPC->p_rt.PLeaching = NPC->p_st.cP_tot * WatBal->rt.Percolation * 0.1;
+  NPC->p_rt.PLeaching = NPC->p_st.cP_tot * WatBal->rt.Percolation * 0.1; // Unit of cP_tot = g/m3
 }
 
 /* ---------------------------------------------------------------------------------------*/
@@ -68,7 +68,7 @@ void CalPLeaching()
 /* ---------------------------------------------------------------------------------------*/
 void CalPSurfRunoff()
 {
-  NPC->p_rt.PSurfRunoff = NPC->p_st.cP_tot * WatBal->rt.Runoff * 0.1;
+  NPC->p_rt.PSurfRunoff = NPC->p_st.cP_tot * WatBal->rt.Runoff * 0.1; // Unit of cP_tot = g/m3
 }
 
 /* ---------------------------------------------------------------------------------------*/
@@ -77,7 +77,7 @@ void CalPSurfRunoff()
 /* ---------------------------------------------------------------------------------------*/
 void CalPSubRunoff()
 {
-  NPC->p_rt.PSubRunoff = NPC->p_st.cP_tot * WatBal->rt.Loss * 0.1;
+  NPC->p_rt.PSubRunoff = NPC->p_st.cP_tot * WatBal->rt.Loss * 0.1; // Unit of cP_tot = g/m3
 }
 
 

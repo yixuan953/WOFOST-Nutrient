@@ -1,4 +1,4 @@
-/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Meteo/LaPlata/ 1981 2019 10 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/LaPlata/LaPlata_maize_mask.nc
+/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Meteo/LaPlata/ 1981 2019 30 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/LaPlata/LaPlata_maize_mask.nc
 LaPlata_Tmin_daily_1981-2019.nc  TMIN tasmin
 LaPlata_Tmax_daily_1981-2019.nc  TMAX tasmax
 LaPlata_SWdown_daily_1981-2019.nc  RADIATION SWdown

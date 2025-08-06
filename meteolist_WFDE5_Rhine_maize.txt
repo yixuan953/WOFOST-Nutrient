@@ -1,4 +1,4 @@
-/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Meteo/Rhine/ 1981 2019 10 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Rhine/Rhine_maize_mask.nc
+/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Meteo/Rhine/ 1981 2019 30 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Rhine/Rhine_maize_mask.nc
 Rhine_Tmin_daily_1981-2019.nc  TMIN tasmin
 Rhine_Tmax_daily_1981-2019.nc  TMAX tasmax
 Rhine_SWdown_daily_1981-2019.nc  RADIATION SWdown

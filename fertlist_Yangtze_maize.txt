@@ -1,4 +1,4 @@
-/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_NPInput/Yangtze/ 1981 2016 10 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Yangtze/Yangtze_maize_mask.nc
+/lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_NPInput/Yangtze/ 1981 2016 30 /lustre/nobackup/WUR/ESG/zhou111/WOFOST-NPcycling/Data/CaseStudy_Mask/Yangtze/Yangtze_maize_mask.nc
 Yangtze_maize_NPinput_1981-2016.nc  RESRATIO Res_return_ratio
 Yangtze_maize_NPinput_1981-2016.nc  P_INORG Inorg_P_appRate
 Yangtze_maize_NPinput_1981-2016.nc  P_MANURE Manure_P_appRate
