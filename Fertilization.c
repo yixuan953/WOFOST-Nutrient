@@ -3,6 +3,10 @@
 #include "extern.h"
 #include "npcycling.h"
 
+/*---------------------------------------------------------------*/
+/* function IfFertilization ()                                   */
+/* Purpose: Check if fertilization is applied on the given date  */
+/*---------------------------------------------------------------*/
 void IfFertilization(char* dateString)
 {
     NPC->Fertilization = 0;
@@ -32,6 +36,32 @@ void IfFertilization(char* dateString)
     }
 }
 
+/*---------------------------------------------------------------------------------*/
+/* function CalResidueInput()                                                      */
+/* Purpose: Calculate residue input based on the simulation of the previous season */
+/*---------------------------------------------------------------------------------*/
+
+void CalResidueInput(){
+    if (Crop->prm.N_fixation == 0.0){ 
+        NPC->N_residue_afterHavest = Crop->N_st.roots;
+        NPC->N_residue_beforeSowing = (Crop->N_st.leaves + Crop->N_st.stems)* Res_return_ratio[Lon][Lat][Crop->Seasons-1];
+        NPC->P_residue_afterHavest = Crop->P_st.roots;
+        NPC->P_residue_beforeSowing = (Crop->P_st.leaves + Crop->P_st.stems)* Res_return_ratio[Lon][Lat][Crop->Seasons-1];
+
+    } else { // If the crop is soybean, then all of the residues will remian in the soil after harvest
+        NPC->N_residue_afterHavest = NPC->N_residue_rt + NPC->N_residue_lv + NPC->N_residue_st;
+        NPC->N_residue_beforeSowing = 0.0;
+        NPC->P_residue_afterHavest = NPC->P_residue_rt + NPC->P_residue_lv + NPC->P_residue_st;
+        NPC->P_residue_beforeSowing = 0.0;
+    }
+}
+
+
+/*------------------------------------------------------------*/
+/* function GetPFertInput()                                   */
+/* Purpose: Get the inorganic and manure P fertilizer inputs  */
+/*------------------------------------------------------------*/
+
 void GetPFertInput()
 {
     Org_frac = 0.5;
@@ -49,8 +79,49 @@ void GetPFertInput()
             else{
                 ManurePInput = Manure_P_appRate[Lon][Lat][Crop->Seasons-1];
             }
-        NPC->P_fert_input = InorgPInput + Org_frac * ManurePInput;
+        NPC->P_fert_input = InorgPInput + Org_frac * (ManurePInput + NPC->P_residue_beforeSowing);
     } else{
         NPC->P_fert_input = 0;
+    }
+}
+
+
+
+/*------------------------------------------------------------*/
+/* function GetNFertInput()                                   */
+/* Purpose: Get the inorganic and manure N fertilizer inputs  */
+/*------------------------------------------------------------*/
+void GetNFertInput()
+{    
+    float Urea_N_input;
+    float Other_inorg_N_input;
+    float Manure_N_input;
+    float Residue_N_input;
+
+    if (NPC->Fertilization == 1)
+    {
+
+        if(isnan(Urea_inorg_N_appRate[Lon][Lat][Crop->Seasons - 1])){
+            Urea_N_input = 0.0;} 
+            else{
+                Urea_N_input = Urea_inorg_N_appRate[Lon][Lat][Crop->Seasons-1]*(1 - EF_NH3_Urea - EF_NOx[Lon][Lat][Crop->Seasons-1] - EF_N2O_Inorg - L_runoff_max * min(f_precip_surf,f_texture));
+            }
+
+        if(isnan(Other_inorg_N_appRate[Lon][Lat][Crop->Seasons - 1])){
+            Other_inorg_N_input= 0.0;} 
+            else{
+                Other_inorg_N_input = Other_inorg_N_appRate[Lon][Lat][Crop->Seasons-1]*(1 - EF_NH3_Inorg - EF_NOx[Lon][Lat][Crop->Seasons-1] - EF_N2O_Inorg - L_runoff_max * min(f_precip_surf,f_texture));
+            }
+
+        if(isnan(Manure_N_appRate[Lon][Lat][Crop->Seasons - 1])){
+            Manure_N_input= 0.0;} 
+            else{
+                Manure_N_input = Manure_N_appRate[Lon][Lat][Crop->Seasons-1]*(1 - EF_NH3_Manure - EF_NOx[Lon][Lat][Crop->Seasons-1] - EF_N2O_Org - * L_runoff_max * min(f_precip_surf,f_texture));
+            }
+
+        Residue_N_input = (NPC->N_residue_beforeSowing + NPC->N_residue_afterHavest) * (1 - EF_N2O_Org)
+
+    } else{
+        NPC->N_fert_input = 0;
     }
 }

@@ -16,14 +16,13 @@ void Output_Daily(FILE *fp_do)
                 "%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f," // Water demand
                 "%4.2f,%4.2f,"   //N,P demand
                 "%4.2f,%4.2f,"   //N,P uptake
-                "%4.2f,%4.2f,%4.2f,%4.2f,"  //Soil P pools
+                "%4.2f,%4.2f,%4.2f,%4.2f,"  //Soil P pools + availability
                 "%4.2f,%4.2f,%4.2f\n",  //P losses
                 Latitude[Lat],
                 Longitude[Lon],
                 MeteoYear[Day],
                 MeteoDay[Day],
                 Crop->st.Development,
-                //Crop->TSumEmergence,
                 WatBal->rt.Transpiration,
                 WatBal->rt.EvapWater,
                 WatBal->rt.EvapSoil,

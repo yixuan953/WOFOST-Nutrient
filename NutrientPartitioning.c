@@ -32,6 +32,7 @@ void NutrientPartioning()
     
     //N_Fix_rt= max(0.,Crop->N_rt.Uptake * Crop->prm.N_fixation / max(0.02, 1.-Crop->prm.N_fixation));
     N_Fix_rt = (max(0., Crop->prm.N_fixation * Total_N_demand) * NutrientLimit);
+    NPC->n_st.N_fixation += N_Fix_rt;
     
     /* Nutrient uptake cannot be larger than the availability and is larger or equal to zero */
     

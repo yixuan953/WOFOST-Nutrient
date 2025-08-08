@@ -10,6 +10,26 @@
 float MaxTSMD;      // [cm]
 float TopsoilDepth; // [cm]
 
+/* Geseous emission factors for N losses*/
+float EF_NH3_Urea;    // [-]
+float EF_NH3_Inorg;   // [-]
+float EF_NH3_Manure;  // [-]
+float EF_N2O_Inorg;   // [-]
+float EF_N2O_Org;     // [-]
+
+/* Runoff factors for N losses */
+float L_runoff_max;      // [-]
+float f_precip_surf;     // Reduction factor for precipitation surplus
+float f_texture;         // Reduction factor for soil texture
+
+/* Leaching factors for N losses */
+float L_leaching_max;    // [-]
+float f_precip_leaching; // Reduction factor for precipitation surplus
+float AveTemp;           // Average temperature of all of the simulation days
+float f_temp;            // Reduction factor for average annual temperature
+float f_soc;             // Reduction factor for soil organic carbon content (%)
+float f_root;            // Reduction factor for root depth
+
 /* P pool calculations */
 float MaxLabileP;   // [mmol/kg]
 float MinLabileP;   // [mmol/kg], = 0.001

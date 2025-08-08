@@ -75,7 +75,7 @@ void InitializeWatBal()
     }
 
     /* Initial Precipitation surplus and TSMD */
-    WatBal->st.PreSurplus = 0;
+    WatBal->rt.PreSurplus = 0;
     WatBal->st.TSMD = 0;
 
     KDiffuse = Afgen(Crop->prm.KDiffuseTb, &(Crop->st.Development));
@@ -260,12 +260,14 @@ void IntegrationWatBal()
     WatBal->st.Infiltration += WatBal->rt.Infiltration;
     WatBal->st.Irrigation   += WatBal->rt.Irrigation;
 
-    WatBal->st.PreSurplus = WatBal->rt.Irrigation + Rain[Lon][Lat][Day] - WatBal->rt.EvapWater - WatBal->rt.EvapSoil - WatBal->rt.Transpiration;
-    
+    // Daily precipitation surplus and the accumulative surplus
+    WatBal->rt.PreSurplus = WatBal->rt.Irrigation + Rain[Lon][Lat][Day] - WatBal->rt.EvapWater - WatBal->rt.EvapSoil - WatBal->rt.Transpiration;
+    WatBal->st.PreSurplu +=  WatBal->rt.PreSurplus;
+
     if (Crop->Sowing > 1.0 && Crop->Emergence == 1.0){
-        WatBal->st.TSMD = max(min(WatBal->st.TSMD,0), MaxTSMD) +  WatBal->st.PreSurplus;     // Vegetated soil  
+        WatBal->st.TSMD = max(min(WatBal->st.TSMD,0), MaxTSMD) +  WatBal->rt.PreSurplus;     // Vegetated soil  
     } else{
-        WatBal->st.TSMD = max(min(WatBal->st.TSMD,0), MaxTSMD/1.8) +  WatBal->st.PreSurplus; // Bare soil
+        WatBal->st.TSMD = max(min(WatBal->st.TSMD,0), MaxTSMD/1.8) +  WatBal->rt.PreSurplus; // Bare soil
     }
 
     /* Surface storage and runoff */

@@ -219,6 +219,7 @@ typedef struct RATES {
         float Runoff;
         float Transpiration;
         float WaterRootExt;
+        float PreSurplus;
         } Rates;
         
  
@@ -435,18 +436,42 @@ typedef struct P_STATE {
         float cP_tot;    // g/m3 = mg/L
         } p_states; 
 
+typedef struct N_STATE {
+        float Emission_NH3;
+        float Emission_N2O;
+        float Emission_NOx;
+
+        float N_loss_surf;
+        float N_loss_sub;
+        float N_loss_leach;
+
+        float N_fixation;
+        float N_decomp;
+        float N_dep;
+
+        float N_surplus;
+        float N_loss_N2;
+        } n_states; 
+
 typedef struct NP_CYCLING {
         
         /* Related parameters */
-        int Fertilization;
+        int Fertilization;      // Check if fertilizer is applied on a certain date or not
         
         /* Related states and rates */
         decomposition_rates decomp_rt;   // Decomposition
         p_rates p_rt;           // Soil P pool: [mmol P / kg soil]
         p_states p_st;          // Soil P pool: [mmol P / kg soil]
-        
-        float P_fert_input;
-        float N_fert_input;
+        n_states n_st;          // Variables related to annual N budges [kg N/ha]
+
+        float P_residue_afterHavest;   // P residue input after harvest [kg/ha]
+        float P_residue_beforeSowing;  // P residue input before sowing [kg/ha]
+
+        float N_residue_afterHavest;   // N residue input after harvest [kg/ha]
+        float N_residue_beforeSowing;  // N residue input before sowing [kg/ha]
+
+        float P_fert_input;     // The P fertilizer input that is available for crop uptakes
+        float N_fert_input;     // The N fertilizer input that is available for crop uptakes
         
         /* Other variables */
         float st_N_avail;       // kg N/ha

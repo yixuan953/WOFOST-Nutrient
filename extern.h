@@ -97,6 +97,7 @@ extern void RateCalulationWatBal(); // 计算水分平衡的速率函数
 extern void IntegrationWatBal();    // 水分平衡积分函数
 extern void EvapTra();              // 蒸发和蒸腾计算函数
 
+
 /* N, P cycling*/
 
 // Initialize
@@ -104,10 +105,26 @@ extern void CalMaxTSMD();           // Daily topsoil mositure deficit [mm]
 extern void CalSoilTexturePara();   // Calculate N, P cycling related parameters
 extern void CalMaxPPoolSize();      // Maximum P pool sizes for labile and stable P pool [mmol/kg]
 extern void InitializeSoilPPool();  // Initilize Soil P pool [mmol/kg]
+extern void InitilizeNBalance();    // Initilize N balances every year [kg N /ha]
+
+// Parameters that are calculated based on the simulation of the previou season
+extern void CalEmissionFactor();    // Calculate the emission factors for N gaseous losses [-]
+extern void CalResidueInput();      // Calculate the residue input (after harvest and before sowing) [kg/ha]
+extern void CalRunoffFactors();
+extern void CalLeachingFactors();
 
 // Fertilizer inputs
 extern void IfFertilization();      // If fertilization is applied
 extern void GetPFertInput();        // Get the P fertilizer input
+extern void GetNFertInput();        // Get the N fertilizer input
+
+// Calculate N balance with consideration of N losses
+extern void CalNBalance();
+extern void CalGaseousEmissions();
+extern void CalNSurfRunoff(); 
+extern void CalNSurplus();
+extern void CalNLeaching();
+extern void CalDenitrification();
 
 // Soil decomposition
 extern void CalDecomp();            // Daily decomposition of SOC,SON, and SOP [kg/ha] 

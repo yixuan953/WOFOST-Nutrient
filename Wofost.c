@@ -5,6 +5,7 @@
 #include <math.h>
 #include "wofost.h"
 #include "extern.h"
+#include "npcycling.h"
 
 // includes are predefined computer code or settings (definitions)
 // the ones with <> are the standard code comes with gcc (GNU Compiler Collection), the ones with "" are made by Iwan
@@ -273,6 +274,7 @@ int main(int argc, char **argv)
 
                         Temp = 0.5 * (Tmax[Lon][Lat][Day] + Tmin[Lon][Lat][Day]);
                         DayTemp = 0.5 * (Tmax[Lon][Lat][Day] + Temp);
+                        AveTemp += DayTemp/(Day+1);
 
                         if (Day <=1){
 
@@ -294,6 +296,7 @@ int main(int argc, char **argv)
                             IfFertilization(Grid->start);
                             IfSowing(Grid->start);
                             GetPFertInput();
+                            GetNFertInput(); 
 
                             if(Crop->Sowing <1 || Crop->Emergence == 0)
                             {
@@ -369,18 +372,18 @@ int main(int argc, char **argv)
                                 }
 
                                 else
-                                {
-                                    /* Add N_leaching calculation here */ 
-                                    
-
-                                    /* Add N denitrification calculation here */ 
-
+                                {  
+                                    /* Calculate nitrogen balance here */
+                                    CalNBalance();
 
                                     /* Write to the output files: Seasonal scale */ /* 写入输出文件 */
                                     Grid->twso[Crop->GrowthDay] = Crop->st.storage;
                                     Grid->length[Crop->GrowthDay] = Crop->GrowthDay;
 
                                     Output_Annual(files_AO[Grid->file_AO]);
+
+                                    CalEmissionFactor(); // Using the WatBal from the previous cropping season
+                                    CalResidueInput();   // Using the residue N, P content in root, leaves and stems
 
                                     /* Clean the LeaveProperties */ /* 清理LeaveProperties */
                                     while (Crop->LeaveProperties != NULL)
@@ -389,14 +392,22 @@ int main(int argc, char **argv)
                                         Crop->LeaveProperties = Crop->LeaveProperties->next;
                                         free(wipe); // 释放LeaveProperties节点占用的内存
                                     }
-
+                                    
+                                    // Initialize the crop growth
                                     Emergence = 0;
                                     Crop->TSumEmergence = 0;
                                     Crop->Emergence = 0;
                                     Crop->Sowing = 0;
                                     Crop->Seasons++;
+
+                                    // Initialize the precipitation surplus
+                                    WatBal->st.PreSurplus = 0;
+
+                                    // Initialize the N balance after each cropping season
+                                    InitilizeNBalance();
                                 }
                             }
+
                         Output_Daily(files_DO[Grid->file_DO]);
                         
                         }   

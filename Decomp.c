@@ -58,4 +58,6 @@ void CalDecomp() {
     NPC->decomp_rt.SON_decomp = NPC->decomp_rt.SOC_decomp * NC_ratio[Lon][Lat];
     NPC->decomp_rt.SOP_decomp = NPC->decomp_rt.SOC_decomp * PC_ratio[Lon][Lat];
 
+    NPC->n_st.N_decomp += NPC->decomp_rt.SON_decomp;
+
 }
