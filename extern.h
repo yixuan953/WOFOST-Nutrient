@@ -107,10 +107,10 @@ extern void CalMaxPPoolSize();      // Maximum P pool sizes for labile and stabl
 extern void InitializeSoilPPool();  // Initilize Soil P pool [mmol/kg]
 extern void InitilizeNBalance();    // Initilize N balances every year [kg N /ha]
 
-// Parameters that are calculated based on the simulation of the previou season
+// Parameters that are calculated based on the simulation of the previou season (for N losses)
 extern void CalEmissionFactor();    // Calculate the emission factors for N gaseous losses [-]
 extern void CalResidueInput();      // Calculate the residue input (after harvest and before sowing) [kg/ha]
-extern void CalRunoffFactors();
+extern void CalRunoffFactors();     
 extern void CalLeachingFactors();
 
 // Fertilizer inputs

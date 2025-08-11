@@ -262,7 +262,7 @@ void IntegrationWatBal()
 
     // Daily precipitation surplus and the accumulative surplus
     WatBal->rt.PreSurplus = WatBal->rt.Irrigation + Rain[Lon][Lat][Day] - WatBal->rt.EvapWater - WatBal->rt.EvapSoil - WatBal->rt.Transpiration;
-    WatBal->st.PreSurplu +=  WatBal->rt.PreSurplus;
+    WatBal->st.PreSurplus +=  WatBal->rt.PreSurplus;
 
     if (Crop->Sowing > 1.0 && Crop->Emergence == 1.0){
         WatBal->st.TSMD = max(min(WatBal->st.TSMD,0), MaxTSMD) +  WatBal->rt.PreSurplus;     // Vegetated soil  

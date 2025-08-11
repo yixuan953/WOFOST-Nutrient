@@ -35,7 +35,7 @@ void CalGaseousEmissions() {
                              Other_inorg_N_appRate[Lon][Lat][Crop->Seasons-1] * EF_NH3_Inorg +
                              Manure_N_appRate[Lon][Lat][Crop->Seasons-1] * EF_NH3_Manure;
     
-    NPC->n_st.Emission_NOx = (Manure_N_appRate[Lon][Lat][Crop->Seasons-1] + Urea_inorg_N_appRate[Lon][Lat][Crop->Seasons-1] + Other_inorg_N_appRate[Lon][Lat][Crop->Seasons-1]) * EF_NOx;
+    NPC->n_st.Emission_NOx = (Manure_N_appRate[Lon][Lat][Crop->Seasons-1] + Urea_inorg_N_appRate[Lon][Lat][Crop->Seasons-1] + Other_inorg_N_appRate[Lon][Lat][Crop->Seasons-1]) * EF_NOx[Lon][Lat][Crop->Seasons-1];
 
 }
 
@@ -58,7 +58,7 @@ void CalNSurfRunoff() {
 
 void CalNLeaching() {
     f_root = 0.75;
-    NPC->n_st.N_loss_leach = NPC->n_st.N_surplus * L_leaching_max * min(f_precip_leaching, f_root, f_soc, f_temp);
+    NPC->n_st.N_loss_leach = NPC->n_st.N_surplus * L_leaching_max * min(f_precip_leaching, min(min(f_root, f_soc), f_temp));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -76,13 +76,12 @@ void CalNSurplus() {
 
 
 /*----------------------------------------------------------*/
-/* function CalDenitrification() [kg/ha]                    */
+/* function CalDenitrification() [kg N/ha]                  */
 /* Purpose: Calculate N denitrification (N2)                */
 /*----------------------------------------------------------*/
 
 void CalDenitrification() {
-
-
+    NPC->n_st.N_loss_N2 = NPC->n_st.N_surplus - NPC->n_st.N_loss_leach;
 }
 
 
@@ -92,10 +91,13 @@ void CalDenitrification() {
 /*------------------------------------------------------------*/
 
 void CalNBalance(){
+    CalLeachingFactors();
+
     CalGaseousEmissions();
     CalNSurfRunoff(); 
+
     CalNSurplus();
-    CalNLeaching()
+    CalNLeaching();
     CalDenitrification();
 }
 
@@ -114,4 +116,5 @@ void InitilizeNBalance(){
 
     NPC->n_st.N_surplus = 0.;
     NPC->n_st.N_loss_N2 = 0.;
+
 }

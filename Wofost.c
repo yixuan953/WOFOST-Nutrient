@@ -285,18 +285,24 @@ int main(int argc, char **argv)
 
                             InitializeWatBal();    // Initialize it only on the first day
                             InitializeSoilPPool(); // Initialize the soil P pool
+                            CalEmissionFactor();   // Calculate the emission factors for N losses: not dependent on water balance
                             RatesToZero();
                         }
 
                         /* Only simulate between start and end year */ 
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
-                                                        
+                            InitilizeNBalance(); // Initialize N balance for each cropping season
+
+                            /* Calculate surface runoff factors based on the previous season*/
+                            CalRunoffFactors();
+
                             /* Determine if the sowing already has occurred */
                             IfFertilization(Grid->start);
-                            IfSowing(Grid->start);
                             GetPFertInput();
                             GetNFertInput(); 
+
+                            IfSowing(Grid->start);
 
                             if(Crop->Sowing <1 || Crop->Emergence == 0)
                             {
@@ -306,10 +312,10 @@ int main(int argc, char **argv)
                                 EvapTra(); 
                                 RateCalulationWatBal(); 
                                 IntegrationWatBal();
+                                //printf("%4d,%3d,%4.2f,%4.2f,%4.2f,%4.2f\n",MeteoYear[Day],Day,WatBal->st.SurfaceStorage,WatBal->rt.Infiltration,WatBal->st.Moisture,WatBal->st.MoistureLOW); //Check if the soil moisture could be updated
                                 CalDecomp();
                                 CalPConcentration();
-                                CalPPoolDynamics();
-                                //printf("%4d,%3d,%4.2f,%4.2f,%4.2f,%4.2f\n",MeteoYear[Day],Day,WatBal->st.SurfaceStorage,WatBal->rt.Infiltration,WatBal->st.Moisture,WatBal->st.MoistureLOW); //Check if the soil moisture could be updated
+                                CalPPoolDynamics();                                       
                             }
 
                             /* If sowing has occurred than determine the emergence */ /* 如果播种已经发生，则确定出苗 */
@@ -373,17 +379,21 @@ int main(int argc, char **argv)
 
                                 else
                                 {  
-                                    /* Calculate nitrogen balance here */
+                                    /* After harvest: Calculate the parameters that will be used for the next season*/
+                                    CalEmissionFactor(); // Emission factors
+                                    CalResidueInput();   // Using the residue N, P content in root, leaves and stems
+
+                                    /* 1. Calculate nitrogen balance */
                                     CalNBalance();
+
+                                    /* 2. Input the residue (root) to the P pool*/
+                                    NPC->P_fert_input = NPC->P_residue_afterHavest;
 
                                     /* Write to the output files: Seasonal scale */ /* 写入输出文件 */
                                     Grid->twso[Crop->GrowthDay] = Crop->st.storage;
                                     Grid->length[Crop->GrowthDay] = Crop->GrowthDay;
 
                                     Output_Annual(files_AO[Grid->file_AO]);
-
-                                    CalEmissionFactor(); // Using the WatBal from the previous cropping season
-                                    CalResidueInput();   // Using the residue N, P content in root, leaves and stems
 
                                     /* Clean the LeaveProperties */ /* 清理LeaveProperties */
                                     while (Crop->LeaveProperties != NULL)

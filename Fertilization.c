@@ -49,9 +49,9 @@ void CalResidueInput(){
         NPC->P_residue_beforeSowing = (Crop->P_st.leaves + Crop->P_st.stems)* Res_return_ratio[Lon][Lat][Crop->Seasons-1];
 
     } else { // If the crop is soybean, then all of the residues will remian in the soil after harvest
-        NPC->N_residue_afterHavest = NPC->N_residue_rt + NPC->N_residue_lv + NPC->N_residue_st;
+        NPC->N_residue_afterHavest = Crop->N_st.roots + Crop->N_st.leaves + Crop->N_st.stems;
         NPC->N_residue_beforeSowing = 0.0;
-        NPC->P_residue_afterHavest = NPC->P_residue_rt + NPC->P_residue_lv + NPC->P_residue_st;
+        NPC->P_residue_afterHavest = Crop->P_st.roots + Crop->P_st.leaves + Crop->N_st.stems;
         NPC->P_residue_beforeSowing = 0.0;
     }
 }
@@ -80,7 +80,8 @@ void GetPFertInput()
                 ManurePInput = Manure_P_appRate[Lon][Lat][Crop->Seasons-1];
             }
         NPC->P_fert_input = InorgPInput + Org_frac * (ManurePInput + NPC->P_residue_beforeSowing);
-    } else{
+    } 
+    else{
         NPC->P_fert_input = 0;
     }
 }
@@ -116,10 +117,10 @@ void GetNFertInput()
         if(isnan(Manure_N_appRate[Lon][Lat][Crop->Seasons - 1])){
             Manure_N_input= 0.0;} 
             else{
-                Manure_N_input = Manure_N_appRate[Lon][Lat][Crop->Seasons-1]*(1 - EF_NH3_Manure - EF_NOx[Lon][Lat][Crop->Seasons-1] - EF_N2O_Org - * L_runoff_max * min(f_precip_surf,f_texture));
+                Manure_N_input = Manure_N_appRate[Lon][Lat][Crop->Seasons-1]*(1 - EF_NH3_Manure - EF_NOx[Lon][Lat][Crop->Seasons-1] - EF_N2O_Org -  L_runoff_max * min(f_precip_surf,f_texture));
             }
 
-        Residue_N_input = (NPC->N_residue_beforeSowing + NPC->N_residue_afterHavest) * (1 - EF_N2O_Org)
+        Residue_N_input = (NPC->N_residue_beforeSowing + NPC->N_residue_afterHavest) * (1 - EF_N2O_Org);
 
     } else{
         NPC->N_fert_input = 0;
