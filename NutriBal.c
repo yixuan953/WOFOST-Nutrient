@@ -12,13 +12,15 @@
 /*----------------------------------------------------------*/
 
 void CalNutriAvail() {
-
     // The daily N availability is dependent on deposition, decomposition, and the unsed fertilizer input
     NPC->st_N_avail = NPC->st_N_avail + NPC->N_fert_input + N_total_dep[Lon][Lat][Day] + NPC->decomp_rt.SON_decomp - Crop->N_rt.Uptake;
-    NPC->n_st.N_dep += N_total_dep[Lon][Lat][Day]; 
 
     // The daily P availability is depend on the transpiration [cm] and P concentration [kg/m3] in the soil solution
     NPC->st_P_avail = WatBal->rt.Transpiration * NPC->p_st.cP_inorg * 100;
+
+    // To calculate the annual balance
+    NPC->n_st.N_dep += N_total_dep[Lon][Lat][Day]; 
+    NPC->p_st.P_dep += P_total_dep[Lon][Lat][Day];
 
 }
 
@@ -58,7 +60,10 @@ void CalNSurfRunoff() {
 
 void CalNLeaching() {
     f_root = 0.75;
-    NPC->n_st.N_loss_leach = NPC->n_st.N_surplus * L_leaching_max * min(f_precip_leaching, min(min(f_root, f_soc), f_temp));
+    float Total_leach;
+    Total_leach = NPC->n_st.N_surplus * L_leaching_max * min(f_precip_leaching, min(min(f_root, f_soc), f_temp));
+    NPC->n_st.N_loss_leach = Total_leach * f_groundwater;
+    NPC->n_st.N_loss_sub = Total_leach * (1-f_groundwater);
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -69,7 +74,7 @@ void CalNLeaching() {
 void CalNSurplus() {
      NPC->n_st.N_surplus = Manure_N_appRate[Lon][Lat][Crop->Seasons-1] + NPC->N_residue_beforeSowing + NPC->N_residue_afterHavest +
                            Urea_inorg_N_appRate[Lon][Lat][Crop->Seasons-1] + Other_inorg_N_appRate[Lon][Lat][Crop->Seasons-1] + 
-                           NPC->n_st.N_decomp + NPC->n_st.N_decomp + NPC->n_st.N_fixation - 
+                           NPC->n_st.N_decomp + NPC->n_st.N_dep + NPC->n_st.N_fixation - 
                            NPC->n_st.Emission_N2O - NPC->n_st.Emission_NH3 - NPC->n_st.Emission_NOx -
                            Crop->N_st.Uptake - NPC->n_st.N_loss_surf;                             
 }
@@ -101,7 +106,7 @@ void CalNBalance(){
     CalDenitrification();
 }
 
-void InitilizeNBalance(){
+void InitilizeNPBalance(){
     NPC->n_st.Emission_N2O = 0.;
     NPC->n_st.Emission_NH3 = 0.;
     NPC->n_st.Emission_NOx = 0.;
@@ -116,5 +121,12 @@ void InitilizeNBalance(){
 
     NPC->n_st.N_surplus = 0.;
     NPC->n_st.N_loss_N2 = 0.;
+
+    NPC->p_st.PSubRunoff = 0.0;
+    NPC->p_st.PSurfRunoff = 0.0;
+    NPC->p_st.PLeaching = 0.0;
+
+    NPC->p_st.P_decomp = 0.0;
+    NPC->p_st.P_dep = 0.0;
 
 }

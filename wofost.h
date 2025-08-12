@@ -434,6 +434,15 @@ typedef struct P_STATE {
         float PrecP;
         float cP_inorg;  // g/m3 = mg/L
         float cP_tot;    // g/m3 = mg/L
+
+        float P_decomp;
+        float P_dep;
+
+        float PLeaching;
+        float PSurfRunoff;
+        float PSubRunoff;
+
+        float P_fert_input;
         } p_states; 
 
 typedef struct N_STATE {
@@ -451,6 +460,8 @@ typedef struct N_STATE {
 
         float N_surplus;
         float N_loss_N2;
+
+        float N_fert_input;
         } n_states; 
 
 typedef struct NP_CYCLING {

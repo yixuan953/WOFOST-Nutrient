@@ -84,6 +84,8 @@ void GetPFertInput()
     else{
         NPC->P_fert_input = 0;
     }
+
+    NPC->p_st.P_fert_input += NPC->P_fert_input;
 }
 
 
@@ -125,4 +127,6 @@ void GetNFertInput()
     } else{
         NPC->N_fert_input = 0;
     }
+
+    NPC->n_st.N_fert_input += NPC->N_fert_input;
 }

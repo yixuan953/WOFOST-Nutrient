@@ -60,6 +60,7 @@ void CalPConcentration()
 void CalPLeaching()
 {
   NPC->p_rt.PLeaching = NPC->p_st.cP_tot * WatBal->rt.Percolation * 0.1; // Unit of cP_tot = g/m3
+  NPC->p_st.PLeaching += NPC->p_rt.PLeaching;
 }
 
 /* ---------------------------------------------------------------------------------------*/
@@ -69,6 +70,7 @@ void CalPLeaching()
 void CalPSurfRunoff()
 {
   NPC->p_rt.PSurfRunoff = NPC->p_st.cP_tot * WatBal->rt.Runoff * 0.1; // Unit of cP_tot = g/m3
+  NPC->p_st.PSurfRunoff += NPC->p_rt.PSurfRunoff;
 }
 
 /* ---------------------------------------------------------------------------------------*/
@@ -78,6 +80,7 @@ void CalPSurfRunoff()
 void CalPSubRunoff()
 {
   NPC->p_rt.PSubRunoff = NPC->p_st.cP_tot * WatBal->rt.Loss * 0.1; // Unit of cP_tot = g/m3
+  NPC->p_st.PSubRunoff += NPC->p_rt.PSubRunoff;
 }
 
 

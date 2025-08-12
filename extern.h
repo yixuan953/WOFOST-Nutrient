@@ -105,7 +105,7 @@ extern void CalMaxTSMD();           // Daily topsoil mositure deficit [mm]
 extern void CalSoilTexturePara();   // Calculate N, P cycling related parameters
 extern void CalMaxPPoolSize();      // Maximum P pool sizes for labile and stable P pool [mmol/kg]
 extern void InitializeSoilPPool();  // Initilize Soil P pool [mmol/kg]
-extern void InitilizeNBalance();    // Initilize N balances every year [kg N /ha]
+extern void InitilizeNPBalance();    // Initilize N balances every year [kg N /ha]
 
 // Parameters that are calculated based on the simulation of the previou season (for N losses)
 extern void CalEmissionFactor();    // Calculate the emission factors for N gaseous losses [-]

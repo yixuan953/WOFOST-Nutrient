@@ -17,6 +17,7 @@ void CalSoilTexturePara()
     KL = 2000;
     miu_SDis = 0.000044;
     L_leaching_max = 0.5;
+    f_groundwater = 0.17;
    } 
    
    else if (texture_class[Lon][Lat] > 11)                                 // Sand
@@ -24,6 +25,7 @@ void CalSoilTexturePara()
     KL = 1000;
     miu_SDis = 0.000002;
     L_leaching_max = 1.0;
+    f_groundwater = 0.67;
    }
    
    else                                                                   // Loam
@@ -31,6 +33,7 @@ void CalSoilTexturePara()
     KL = 1500;
     miu_SDis = 0.000044;
     L_leaching_max = 0.75;
+    f_groundwater = 0.4;
    }
 }
 

@@ -21,6 +21,7 @@ float EF_N2O_Org;     // [-]
 float L_runoff_max;      // [-]
 float f_precip_surf;     // Reduction factor for precipitation surplus
 float f_texture;         // Reduction factor for soil texture
+float f_groundwater;     // The fraction of leaching to groudwater
 
 /* Leaching factors for N losses */
 float L_leaching_max;    // [-]

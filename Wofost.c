@@ -292,7 +292,7 @@ int main(int argc, char **argv)
                         /* Only simulate between start and end year */ 
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
-                            InitilizeNBalance(); // Initialize N balance for each cropping season
+                            InitilizeNPBalance(); // Initialize N balance for each cropping season
 
                             /* Calculate surface runoff factors based on the previous season*/
                             CalRunoffFactors();
@@ -383,11 +383,8 @@ int main(int argc, char **argv)
                                     CalEmissionFactor(); // Emission factors
                                     CalResidueInput();   // Using the residue N, P content in root, leaves and stems
 
-                                    /* 1. Calculate nitrogen balance */
+                                    /* Calculate nitrogen balance */
                                     CalNBalance();
-
-                                    /* 2. Input the residue (root) to the P pool*/
-                                    NPC->P_fert_input = NPC->P_residue_afterHavest;
 
                                     /* Write to the output files: Seasonal scale */ /* 写入输出文件 */
                                     Grid->twso[Crop->GrowthDay] = Crop->st.storage;
@@ -402,7 +399,7 @@ int main(int argc, char **argv)
                                         Crop->LeaveProperties = Crop->LeaveProperties->next;
                                         free(wipe); // 释放LeaveProperties节点占用的内存
                                     }
-                                    
+
                                     // Initialize the crop growth
                                     Emergence = 0;
                                     Crop->TSumEmergence = 0;
@@ -413,8 +410,13 @@ int main(int argc, char **argv)
                                     // Initialize the precipitation surplus
                                     WatBal->st.PreSurplus = 0;
 
-                                    // Initialize the N balance after each cropping season
-                                    InitilizeNBalance();
+                                    // Initialize the N balance and P losses after each cropping season
+                                    InitilizeNPBalance();
+
+                                    /* Input the residue (root) and update the P pool */
+                                    NPC->P_fert_input = NPC->P_residue_afterHavest;
+                                    NPC->p_st.P_fert_input += NPC->P_fert_input;
+                                    CalPPoolDynamics();
                                 }
                             }
 

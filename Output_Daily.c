@@ -6,7 +6,7 @@
 
 void header_DO(FILE *fp_do)
 {
-    fprintf(fp_do,"Lat,Lon,Year,Day,Dev_Stage,Transpiration,EvaWater,EvaSoil,SoilMoisture,SurfaceRunoff,SubsurfaceRunoff,Percolation,N_demand,P_demand,N_Uptake,P_Uptake,Lpool,Spool,Prepool,P_avail,P_Surf,P_Sub,P_Leaching\n");
+    fprintf(fp_do,"Lat,Lon,Year,Day,Dev_Stage,Transpiration,EvaWater,EvaSoil,SoilMoisture,SurfaceRunoff,SubsurfaceRunoff,Percolation,TSMD,N_demand,P_demand,N_Uptake,P_Uptake,Lpool,Spool,Prepool,P_avail,P_Surf,P_Sub,P_Leaching\n");
 }
 
 void Output_Daily(FILE *fp_do)
@@ -30,6 +30,7 @@ void Output_Daily(FILE *fp_do)
                 WatBal->rt.Runoff,
                 WatBal->rt.Loss,
                 WatBal->rt.Percolation,
+                WatBal->st.TSMD,
                 Crop->N_rt.Demand_lv + Crop->N_rt.Demand_st + Crop->N_rt.Demand_ro,
                 Crop->P_rt.Demand_lv + Crop->P_rt.Demand_st + Crop->P_rt.Demand_ro,
                 Crop->N_rt.Uptake,
