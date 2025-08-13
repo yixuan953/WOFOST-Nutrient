@@ -49,13 +49,24 @@ void InitializeSoilPPool()
 /* --------------------------------------------------------------------------------------------*/
 void CalPConcentration()
 {
-  NPC->p_st.cP_inorg = 1000 * NPC->p_st.LabileP/(KL * (MaxLabileP - NPC->p_st.LabileP)); // Unit of cP_tot = kg/m3
+  float Max_cP_inorg = 90;    // mg/l = g/m3
+  float Min_cP_inorg = 0.001; // mg/l = g/m3
+
+  NPC->p_st.cP_inorg = 1000 * NPC->p_st.LabileP/(KL * (MaxLabileP - NPC->p_st.LabileP));  // Unit of cP_inorg = g/m3
+
+  if (isinf(NPC->p_st.cP_inorg))
+  {
+    NPC->p_st.cP_inorg = Max_cP_inorg;
+  } else {
+    NPC->p_st.cP_inorg = max(NPC->p_st.cP_inorg, Min_cP_inorg);
+  }
+
   NPC->p_st.cP_tot = 1.1 * NPC->p_st.cP_inorg + 0.1 * exp(-NPC->p_st.cP_inorg); // Unit of cP_tot = g/m3
 }
 
 /* ---------------------------------------------------------------------------------------*/
 /*  function CalPLeaching()                                                               */
-/*  Purpose: Calculate daily P losses through the leaching[kg P/ha]                       */
+/*  Purpose: Calculate daily P losses through the leaching [kg P/ha]                      */
 /* ---------------------------------------------------------------------------------------*/
 void CalPLeaching()
 {
@@ -69,7 +80,7 @@ void CalPLeaching()
 /* ---------------------------------------------------------------------------------------*/
 void CalPSurfRunoff()
 {
-  NPC->p_rt.PSurfRunoff = NPC->p_st.cP_tot * WatBal->rt.Runoff * 0.1; // Unit of cP_tot = g/m3
+  NPC->p_rt.PSurfRunoff = NPC->p_st.cP_tot * WatBal->rt.Runoff * 0.1 ; // Unit of cP_tot = g/m3
   NPC->p_st.PSurfRunoff += NPC->p_rt.PSurfRunoff;
 }
 
@@ -95,7 +106,7 @@ void CalPdisS()
   float miu_DisS = 0.0014;      // The rate constant for the transfer from the soil solution to the stable P pool
   
   // Initial PdisS depends on cP_tot
-  if (KF >= pow(NPC->p_st.cP_inorg,NPC->p_st.StableP))
+  if ((KF*pow(NPC->p_st.cP_inorg, n)) >= NPC->p_st.StableP)
   {
     NPC->p_rt.PdisS = miu_DisS * (KF * NPC->p_st.cP_inorg - NPC->p_st.StableP); // From soil solution to stable P pool
   } else 
@@ -104,14 +115,19 @@ void CalPdisS()
   }  
   
   // Correct the NPC->p_rt.PdisS
-  if (NPC->p_rt.PdisS < 0 && NPC->p_st.PrecP < fabsf(NPC->p_rt.PdisS))
-  {
-    NPC->p_rt.PdisS_corr = NPC->p_rt.PdisS + NPC->p_rt.PdisS;
-  } else
-  {
-    NPC->p_rt.PdisS_corr = 0;
+  if (NPC->p_rt.PdisS >=0 ){
+    NPC->p_rt.PdisS_corr = NPC->p_rt.PdisS;
+  } else{
+    if (NPC->p_rt.PdisS < 0 && NPC->p_st.PrecP < fabsf(NPC->p_rt.PdisS))
+    {
+      NPC->p_rt.PdisS_corr = NPC->p_rt.PdisS + NPC->p_st.PrecP;
+    } 
+    if(NPC->p_rt.PdisS < 0 && NPC->p_st.PrecP >= fabsf(NPC->p_rt.PdisS))
+    {
+      NPC->p_rt.PdisS_corr = 0;
+    }
   }
-  
+
 }
 
 
@@ -122,15 +138,15 @@ void CalPdisS()
 void CalPdisL()
 {
    TopsoilDepth = 30.0;           // [cm]
-   float Pacc;                    // [kgP/ha]
+   float Pacc = 0.0;              // [kg P/ha]
    float MolarMassP = 31.0;       // [mg/mmol]
    
    if (Crop->Sowing <1) // When the crop is now sowed or transplanted, there is no crop uptake
    {
-    Pacc = NPC->P_fert_input + P_total_dep[Lon][Lat][Day] - NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
+    Pacc = NPC->P_fert_input + P_total_dep[Lon][Lat][Day] + NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
    } else 
    {
-    Pacc = NPC->P_fert_input + P_total_dep[Lon][Lat][Day] - Crop->N_rt.Uptake - NPC->decomp_rt.SOP_decomp - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
+    Pacc = NPC->P_fert_input + P_total_dep[Lon][Lat][Day] + NPC->decomp_rt.SOP_decomp - Crop->P_rt.Uptake - NPC->p_rt.PSurfRunoff - NPC->p_rt.PSubRunoff - NPC->p_rt.PLeaching;
    }
    
    NPC->p_rt.PdisL = (100 * Pacc/(MolarMassP * TopsoilDepth * bulk_density[Lon][Lat])) - NPC->p_rt.PdisS; // Unit: [mmol P/kg soil]
@@ -150,7 +166,7 @@ void CalPrecipChangeS()
     //When the precipitation P pool is not enough to supply the stable P pool
     if (NPC->p_st.PrecP < fabsf(NPC->p_rt.PrecP_S))
     {
-      NPC->p_rt.PrecP_S = -NPC->p_st.PrecP; 
+      NPC->p_rt.PrecP_S = NPC->p_st.PrecP * (-1); 
     } else 
     {
       NPC->p_rt.PrecP_S = NPC->p_rt.PdisS;
@@ -254,7 +270,7 @@ void CalPrecipChangeL()
 /* -----------------------------------------------------------------------*/
 void UpdateStableP()
 {
-  NPC->p_st.StableP = max((NPC->p_st.StableP + NPC->p_rt.PdisS_corr), MaxStableP);
+  NPC->p_st.StableP = min((NPC->p_st.StableP + NPC->p_rt.PdisS_corr), MaxStableP);
 }
 
 /* ------------------------------------------------------------------------*/

@@ -12,11 +12,12 @@
 /*----------------------------------------------------------*/
 
 void CalNutriAvail() {
+    float corr_para_P_uptake = 25.0;
+    // The daily P availability is depend on the transpiration [cm] and P concentration [g/m3] in the soil solution
+    NPC->st_P_avail = corr_para_P_uptake * NPC->p_st.cP_inorg * WatBal->rt.Transpiration * 0.1;
+
     // The daily N availability is dependent on deposition, decomposition, and the unsed fertilizer input
     NPC->st_N_avail = NPC->st_N_avail + NPC->N_fert_input + N_total_dep[Lon][Lat][Day] + NPC->decomp_rt.SON_decomp - Crop->N_rt.Uptake;
-
-    // The daily P availability is depend on the transpiration [cm] and P concentration [kg/m3] in the soil solution
-    NPC->st_P_avail = WatBal->rt.Transpiration * NPC->p_st.cP_inorg * 100;
 
     // To calculate the annual balance
     NPC->n_st.N_dep += N_total_dep[Lon][Lat][Day]; 
@@ -107,6 +108,13 @@ void CalNBalance(){
 }
 
 void InitilizeNPBalance(){
+
+    NPC->st_N_avail = 0.;
+    NPC->n_st.N_fert_input = 0.0;
+    NPC->N_fert_input = 0.0;
+    NPC->N_residue_afterHavest = 0.0;
+    NPC->N_residue_beforeSowing = 0.0;
+
     NPC->n_st.Emission_N2O = 0.;
     NPC->n_st.Emission_NH3 = 0.;
     NPC->n_st.Emission_NOx = 0.;
@@ -122,11 +130,17 @@ void InitilizeNPBalance(){
     NPC->n_st.N_surplus = 0.;
     NPC->n_st.N_loss_N2 = 0.;
 
+    NPC->st_P_avail = 0.;
+    NPC->p_st.P_fert_input = 0.0;
+    NPC->P_fert_input = 0.0;
+
     NPC->p_st.PSubRunoff = 0.0;
     NPC->p_st.PSurfRunoff = 0.0;
     NPC->p_st.PLeaching = 0.0;
 
     NPC->p_st.P_decomp = 0.0;
     NPC->p_st.P_dep = 0.0;
+    NPC->P_residue_afterHavest = 0.0;
+    NPC->P_residue_beforeSowing = 0.0;
 
 }

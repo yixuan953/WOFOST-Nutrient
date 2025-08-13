@@ -276,7 +276,7 @@ int main(int argc, char **argv)
                         DayTemp = 0.5 * (Tmax[Lon][Lat][Day] + Temp);
                         AveTemp += DayTemp/(Day+1);
 
-                        if (Day <=1){
+                        if (Day <1){
 
                             CalSoilTexturePara();   // Calculate N, P cycling related parameters
 
@@ -285,6 +285,9 @@ int main(int argc, char **argv)
 
                             InitializeWatBal();    // Initialize it only on the first day
                             InitializeSoilPPool(); // Initialize the soil P pool
+
+                            InitilizeNPBalance();  // Initialize N balance for each cropping season
+                            
                             CalEmissionFactor();   // Calculate the emission factors for N losses: not dependent on water balance
                             RatesToZero();
                         }
@@ -292,11 +295,7 @@ int main(int argc, char **argv)
                         /* Only simulate between start and end year */ 
                         if ((MeteoYear[Day] >= Meteo->StartYear && MeteoYear[Day] <= Meteo->EndYear) && (Meteo->Seasons >= Crop->Seasons))
                         {
-                            InitilizeNPBalance(); // Initialize N balance for each cropping season
-
-                            /* Calculate surface runoff factors based on the previous season*/
-                            CalRunoffFactors();
-
+                            
                             /* Determine if the sowing already has occurred */
                             IfFertilization(Grid->start);
                             GetPFertInput();
@@ -317,7 +316,7 @@ int main(int argc, char **argv)
                                 CalPConcentration();
                                 CalPPoolDynamics();                                       
                             }
-
+                            
                             /* If sowing has occurred than determine the emergence */ /* 如果播种已经发生，则确定出苗 */
                             if (Crop->Sowing >= 1 && Crop->Emergence == 0)
                             {
@@ -327,24 +326,22 @@ int main(int argc, char **argv)
                                     /* Initialize: set state variables */ /* 初始化：设置状态变量 */
                                     InitializeCrop();
                                     //InitializeWatBal();
-                                    InitializeNutrients(); // Consider delete the soil total N, P within this function, only initialize crop N, P content                           
-
+                                    InitializeNutrients(); // Consider delete the soil total N, P within this function, only initialize crop N, P content                         
                                 }
                             }
-
                             if (Crop->Sowing >= 1 && Crop->Emergence == 1)
                             {
                                 if (Crop->st.Development <= (Crop->prm.DevelopStageHarvest) && Crop->GrowthDay < CycleLength)
                                 {
+                                    /* Set the rate variables to zero */ 
+                                    RatesToZero(); // It includes the rate in terms of crop, site, and WatBal
+
                                     Astro();
                                     CalcPenman();
                                     CalcPenmanMonteith();
 
                                     /* Calculate the evapotranspiration */ 
                                     EvapTra(); // Mainly for crop
-
-                                    /* Set the rate variables to zero */ 
-                                    RatesToZero(); // It includes the rate in terms of crop, site, and WatBal
 
                                     /* Rate calculations */ 
                                     RateCalulationWatBal();    // Here the water balance is calculated considering the input of irrigation
@@ -376,14 +373,13 @@ int main(int argc, char **argv)
                                     Crop->GrowthDay++;
                                     
                                 }
-
                                 else
                                 {  
                                     /* After harvest: Calculate the parameters that will be used for the next season*/
                                     CalEmissionFactor(); // Emission factors
-                                    CalResidueInput();   // Using the residue N, P content in root, leaves and stems
+                                    CalRunoffFactors();  // Runoff factors
 
-                                    /* Calculate nitrogen balance */
+                                    /* Calculate nitrogen balance of this season*/
                                     CalNBalance();
 
                                     /* Write to the output files: Seasonal scale */ /* 写入输出文件 */
@@ -407,16 +403,18 @@ int main(int argc, char **argv)
                                     Crop->Sowing = 0;
                                     Crop->Seasons++;
 
+                                    /* Input the residue (root) and update the P pool */
+                                    NPC->P_fert_input = NPC->P_residue_afterHavest * Org_frac;
+                                    NPC->p_st.P_fert_input += NPC->P_fert_input;
+                                    CalPPoolDynamics();
+
                                     // Initialize the precipitation surplus
                                     WatBal->st.PreSurplus = 0;
 
                                     // Initialize the N balance and P losses after each cropping season
-                                    InitilizeNPBalance();
-
-                                    /* Input the residue (root) and update the P pool */
-                                    NPC->P_fert_input = NPC->P_residue_afterHavest;
-                                    NPC->p_st.P_fert_input += NPC->P_fert_input;
-                                    CalPPoolDynamics();
+                                    InitilizeNPBalance(); 
+                                    
+                                    CalResidueInput();   // Using the residue N, P content in root, leaves and stems
                                 }
                             }
 

@@ -18,7 +18,7 @@
 
 void CalMaxTSMD() {
     TopsoilDepth = 30.0;
-    MaxTSMD = -((20.0 + 1.3 * clay_content[Lon][Lat] - 0.01 * clay_content[Lon][Lat] * clay_content[Lon][Lat]) * TopsoilDepth) / 23.; // Unit: mm
+    MaxTSMD = (-1)*((20.0 + 1.3 * clay_content[Lon][Lat] - 0.01 * clay_content[Lon][Lat] * clay_content[Lon][Lat]) * TopsoilDepth) / 23.; // Unit: mm
 }
 
 /*---------------------------------------------------*/
@@ -35,11 +35,11 @@ void CalDecomp() {
     float m_temp;        // Modification factor for temperature
     float m_moisture;    // Modification factor for soil moisture
     float m_cover;       // Modification factor for soil cover
-    float k_rate = 0.02; // Decomposition rate [kg/ha per year]
+    float k_rate = 0.05; // Decomposition rate [kg/ha per year]
      
     m_temp = 47.91 / (1.0 + exp(106.06 / (DayTemp + 18.27)));
 
-    AccTSMD = max(min(WatBal->st.TSMD * 0.1, 0), MaxTSMD); // Then the units of both TSMD and MaxTSMD are 
+    AccTSMD = max(min(WatBal->st.TSMD * 10, 0), MaxTSMD); // Then the units of both TSMD and MaxTSMD are both mm
 
     if (AccTSMD > 0.444 * MaxTSMD){
         m_moisture = 1.0;

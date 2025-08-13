@@ -65,8 +65,10 @@ void CalResidueInput(){
 void GetPFertInput()
 {
     Org_frac = 0.5;
-    float InorgPInput;
-    float ManurePInput;
+    float InorgPInput = 0.;
+    float ManurePInput = 0.;
+    NPC->P_fert_input = 0.0;
+
     if (NPC->Fertilization == 1)
     {
         if(isnan(Inorg_P_appRate[Lon][Lat][Crop->Seasons - 1])){
@@ -79,6 +81,7 @@ void GetPFertInput()
             else{
                 ManurePInput = Manure_P_appRate[Lon][Lat][Crop->Seasons-1];
             }
+    
         NPC->P_fert_input = InorgPInput + Org_frac * (ManurePInput + NPC->P_residue_beforeSowing);
     } 
     else{
@@ -100,6 +103,7 @@ void GetNFertInput()
     float Other_inorg_N_input;
     float Manure_N_input;
     float Residue_N_input;
+    float Org_frac = 0.5;
 
     if (NPC->Fertilization == 1)
     {
@@ -123,6 +127,7 @@ void GetNFertInput()
             }
 
         Residue_N_input = (NPC->N_residue_beforeSowing + NPC->N_residue_afterHavest) * (1 - EF_N2O_Org);
+        NPC->N_fert_input = Urea_N_input + Other_inorg_N_input + Org_frac* (Manure_N_input + Residue_N_input);
 
     } else{
         NPC->N_fert_input = 0;
